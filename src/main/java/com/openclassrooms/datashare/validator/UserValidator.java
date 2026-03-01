@@ -23,6 +23,17 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(@NonNull Object target, @NonNull Errors errors) {
-
+        User user = (User) target;
+        final String login = user.getLogin();
+        final String password = user.getPassword();
+        if(!Strings.isEmpty(login) && !login.matches("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")){
+            errors.rejectValue("login", "login.badformat", "Login is not a valid email");
+        }
+        if(!Strings.isEmpty(password) && password.length() < 8) {
+            errors.rejectValue("password", "password.tooShort", "Password is too short (minimum 8 characters)");
+        }
+        if (errors.hasErrors()) {
+            throw new IllegalArgumentException(errors.getAllErrors().stream().map(ObjectError::getDefaultMessage).collect(Collectors.joining("</br>-", "-", "")));
+        }
     }
 }
