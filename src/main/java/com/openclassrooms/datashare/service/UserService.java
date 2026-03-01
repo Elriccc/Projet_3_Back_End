@@ -30,7 +30,17 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final CustomJwtService jwtService;
 
-    public void register(User entity) {
+    public void register(User user) {
+        Assert.notNull(user, "User must not be null");
+        log.info("Registering new user");
+
+        Optional<User> optionalUser = repository.findByLogin(user.getLogin());
+        if (optionalUser.isPresent()) {
+            throw new IllegalArgumentException(String.format("User with login %s already exists", user.getLogin()));
+        }
+        validator.validate(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        repository.save(user);
     }
 
     public String login(@NotBlank String login, @NotBlank String password) {
