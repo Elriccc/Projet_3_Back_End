@@ -49,13 +49,13 @@ public class FileLink {
     @Column(name = "isExpired")
     private Boolean isExpired;
 
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(name = "tags", joinColumns = @JoinColumn(name = "file_link_id"))
     @Column(name = "tag")
     private List<String> tags;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "idUser")
     private User user;
 
     @CreationTimestamp

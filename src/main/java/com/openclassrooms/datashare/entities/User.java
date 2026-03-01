@@ -20,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "datashareUser")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +35,7 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "fileLinks")
+    @OneToMany(mappedBy = "user")
     private Set<FileLink> fileLinks;
 
     @CreationTimestamp
