@@ -128,7 +128,8 @@ public class UserControllerTest {
 
             // WHEN
             mockMvc.perform(MockMvcRequestBuilders.post(URL_LOGIN)
-                            .param("password", userDTO.getPassword())
+                            .content(objectMapper.writeValueAsString(userDTO))
+                            .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -143,7 +144,8 @@ public class UserControllerTest {
 
             // WHEN
             mockMvc.perform(MockMvcRequestBuilders.post(URL_LOGIN)
-                            .param("login", userDTO.getLogin())
+                            .content(objectMapper.writeValueAsString(userDTO))
+                            .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -159,8 +161,8 @@ public class UserControllerTest {
 
             // WHEN
             mockMvc.perform(MockMvcRequestBuilders.post(URL_LOGIN)
-                            .param("login", userDTO.getLogin())
-                            .param("password", userDTO.getPassword())
+                            .content(objectMapper.writeValueAsString(userDTO))
+                            .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -184,8 +186,8 @@ public class UserControllerTest {
 
             // WHEN
             mockMvc.perform(MockMvcRequestBuilders.post(URL_LOGIN)
-                            .param("login", userDTO.getLogin())
-                            .param("password", userDTO.getPassword())
+                            .content(objectMapper.writeValueAsString(userDTO))
+                            .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -208,8 +210,8 @@ public class UserControllerTest {
 
             // WHEN
             mockMvc.perform(MockMvcRequestBuilders.post(URL_LOGIN)
-                            .param("login", userDTO.getLogin())
-                            .param("password", userDTO.getPassword())
+                            .content(objectMapper.writeValueAsString(userDTO))
+                            .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());

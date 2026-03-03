@@ -1,5 +1,6 @@
 package com.openclassrooms.datashare.handler;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class, ConstraintViolationException.class})
     protected ResponseEntity<Object> handleConflict(RuntimeException runtimeException, WebRequest request) {
         logError(runtimeException);
         return handleExceptionInternal(runtimeException, getErrorDetails(runtimeException, request), new HttpHeaders(),
