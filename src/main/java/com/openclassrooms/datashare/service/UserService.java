@@ -53,5 +53,8 @@ public class UserService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         return jwtService.generateToken(userDetailService.loadUserByUsername(login));
     }
+
+    public boolean validateToken(@NotBlank String token){
+        return jwtService.isTokenNotExpired(token);
     }
 }

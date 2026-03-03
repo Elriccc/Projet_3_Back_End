@@ -25,7 +25,11 @@ public class UserController {
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDto) {
         String jwt = service.login(userDto.getLogin(), userDto.getPassword());
-        
         return ResponseEntity.ok(jwt);
+    }
+
+    @GetMapping("/api/auth/{token}")
+    public ResponseEntity<?> isAuthTokenCorrect(@PathVariable String token){
+        return ResponseEntity.ok(service.validateToken(token));
     }
 }

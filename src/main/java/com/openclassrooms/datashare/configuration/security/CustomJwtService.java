@@ -34,15 +34,15 @@ public class CustomJwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String USERNAME = this.getUsernameFromToken(token);
-        return USERNAME.equals(userDetails.getUsername()) && !this.isTokenExpired(token);
+        return USERNAME.equals(userDetails.getUsername()) && this.isTokenNotExpired(token);
     }
 
     private SecretKey getSigningKey(){
         return Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
     }
 
-    private boolean isTokenExpired(String token) {
-        return this.extractAllClaims(token).getExpiration().before(new Date());
+    public boolean isTokenNotExpired(String token) {
+        return !this.extractAllClaims(token).getExpiration().before(new Date());
     }
 
     private Claims extractAllClaims(String token) {
