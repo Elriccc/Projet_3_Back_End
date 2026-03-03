@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -43,7 +42,16 @@ public class UserService {
         repository.save(user);
     }
 
-    public String login(@NotBlank String login, @NotBlank String password) {
-        return null;
+    public String login(String login, String password) {
+        Assert.notNull(login, "Login must not be null");
+        Assert.notNull(password, "Password must not be null");
+        User user = repository.findByLogin(login).stream().findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new IllegalArgumentException("Password does not match");
+        }
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
+        return jwtService.generateToken(userDetailService.loadUserByUsername(login));
+    }
     }
 }
