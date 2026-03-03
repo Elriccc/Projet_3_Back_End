@@ -29,23 +29,34 @@ public class CustomJwtService {
     }
 
     public String getUsernameFromToken(String token) {
-        return this.extractAllClaims(token).getSubject();
+        if(this.isTokenExpired(token)){
+            return null;
+        }
+        try {
+            return this.extractAllClaims(token).getSubject();
+        } catch(ExpiredJwtException exception){
+            return null;
+        }
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String USERNAME = this.getUsernameFromToken(token);
-        return USERNAME.equals(userDetails.getUsername()) && this.isTokenNotExpired(token);
+        return USERNAME.equals(userDetails.getUsername()) && !this.isTokenExpired(token);
     }
 
     private SecretKey getSigningKey(){
         return Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
     }
 
-    public boolean isTokenNotExpired(String token) {
-        return !this.extractAllClaims(token).getExpiration().before(new Date());
+    public boolean isTokenExpired(String token) {
+        try {
+            return this.extractAllClaims(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException exception){
+            return true;
+        }
     }
 
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) throws ExpiredJwtException{
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()

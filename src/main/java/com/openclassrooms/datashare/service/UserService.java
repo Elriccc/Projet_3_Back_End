@@ -55,6 +55,6 @@ public class UserService {
     }
 
     public boolean validateToken(@NotBlank String token){
-        return jwtService.isTokenNotExpired(token);
+        return !jwtService.isTokenExpired(token);
     }
 }
