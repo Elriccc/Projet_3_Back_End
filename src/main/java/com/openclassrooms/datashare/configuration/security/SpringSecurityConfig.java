@@ -20,6 +20,7 @@ import org.springframework.security.web.header.writers.XXssProtectionHeaderWrite
 @RequiredArgsConstructor
 public class SpringSecurityConfig {
     private final AuthTokenFilter authenticationJwtFilter;
+    private final AuthorizedPath authorizedPath;
     private final CustomUserDetailService customUserDetailService;
 
     @Bean
@@ -57,9 +58,7 @@ public class SpringSecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(authorize -> authorize
                         // No auth needed on :
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/api/register", "/api/login").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(authorizedPath.getPermitAllPaths()).permitAll()
                         // Others protected routes will be added here.
                         .anyRequest().authenticated()
                 )
