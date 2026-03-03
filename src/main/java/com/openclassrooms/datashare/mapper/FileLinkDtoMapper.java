@@ -1,6 +1,7 @@
 package com.openclassrooms.datashare.mapper;
 
 import ch.qos.logback.core.util.StringUtil;
+import com.openclassrooms.datashare.dto.FileLinkReadDTO;
 import com.openclassrooms.datashare.dto.FileLinkUploadDTO;
 import com.openclassrooms.datashare.entities.FileLink;
 import org.mapstruct.Mapper;
@@ -8,6 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR)
@@ -30,5 +32,15 @@ public interface FileLinkDtoMapper {
 
     default LocalDate mapExpirationDate(FileLinkUploadDTO fileLinkUploadDTO){
         return LocalDate.now().plusDays(fileLinkUploadDTO.getExpirationTime());
+    }
+
+    @Mapping(target = "daysUntilExpired", expression = "java(mapDaysUntilExpired(fileLink))")
+    FileLinkReadDTO toDTO(FileLink fileLink);
+
+    default int mapDaysUntilExpired(FileLink fileLink){
+        if(fileLink.getExpirationDate() != null && fileLink.getExpirationDate().isAfter(LocalDate.now())) {
+            return (int) ChronoUnit.DAYS.between(fileLink.getExpirationDate(), LocalDate.now());
+        }
+        return 0;
     }
 }
