@@ -7,27 +7,23 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
 public class UserController {
-
-    private UserService service;
-    private UserDtoMapper mapper;
+    private final UserService service;
+    private final UserDtoMapper mapper;
 
     @PostMapping("/api/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDto) {
+    public ResponseEntity<?> register(@RequestBody UserDTO userDto) {
         service.register(mapper.toEntity(userDto));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(UserDTO userDto) {
+    public ResponseEntity<?> login(@RequestBody UserDTO userDto) {
         String jwt = service.login(userDto.getLogin(), userDto.getPassword());
         
         return ResponseEntity.ok(jwt);
