@@ -17,8 +17,6 @@ public interface FileLinkDtoMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "created_at", ignore = true)
     @Mapping(target = "updated_at", ignore = true)
-    @Mapping(target = "link", ignore = true)
-    @Mapping(target = "path", ignore = true)
     @Mapping(target = "usePassword", expression = "java(mapUsePassword(fileLinkUploadDTO))")
     @Mapping(target = "expirationDate", expression = "java(mapExpirationDate(fileLinkUploadDTO))")
     @Mapping(target = "isExpired", ignore = true)
@@ -34,6 +32,7 @@ public interface FileLinkDtoMapper {
         return LocalDate.now().plusDays(fileLinkUploadDTO.getExpirationTime());
     }
 
+    @Mapping(target = "file", ignore = true)
     @Mapping(target = "daysUntilExpired", expression = "java(mapDaysUntilExpired(fileLink))")
     FileLinkReadDTO toDTO(FileLink fileLink);
 

@@ -19,21 +19,13 @@ import java.util.List;
 @Table(name = "fileLink")
 public class FileLink {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private Long id;
-
-    @NotBlank
-    @Column(name = "link", nullable = false)
-    private String link;
+    private String id;
 
     @NotBlank
     @Column(name = "name", nullable = false)
     private String name;
-
-    @NotBlank
-    @Column(name = "path")
-    private String path;
 
     @Column(name = "password")
     private String password;

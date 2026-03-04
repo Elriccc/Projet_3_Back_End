@@ -23,9 +23,9 @@ import java.util.Set;
 @Table(name = "datashareUser")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private Long id;
+    private String id;
 
     @NotBlank
     @Column(name = "login", unique = true, nullable = false)
