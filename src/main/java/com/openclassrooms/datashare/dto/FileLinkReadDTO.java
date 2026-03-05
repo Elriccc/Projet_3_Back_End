@@ -13,6 +13,7 @@ public class FileLinkReadDTO {
     private String fileLink;
     @NotBlank
     private String name;
+    private String password;
     @Min(0)
     private int daysUntilExpired;
     private List<String> tags;

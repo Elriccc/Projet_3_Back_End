@@ -44,4 +44,9 @@ public class FileLinkService {
 
         return null;
     }
+
+    public boolean isPasswordCorrect(FileLink fileLink, String password){
+
+        return false;
+    }
 }

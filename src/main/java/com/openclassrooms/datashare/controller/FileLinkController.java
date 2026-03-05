@@ -93,9 +93,10 @@ public class FileLinkController {
     public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody String password){
         FileLink fileLink = this.service.getFileLink(fileLinkPath);
         FileLinkReadDTO dto = this.mapper.toDTO(fileLink);
-
-        MultipartFile file = this.fileService.getFile(fileLink);
-        dto.setFile(file);
+        if(this.service.isPasswordCorrect(fileLink, password)) {
+            MultipartFile file = this.fileService.getFile(fileLink);
+            dto.setFile(file);
+        }
         return ResponseEntity.ok(dto);
     }
 
