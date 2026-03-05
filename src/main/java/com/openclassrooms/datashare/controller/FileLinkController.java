@@ -51,13 +51,13 @@ public class FileLinkController {
                 , examples = @ExampleObject(value =
                     "[" +
                         "{" +
-                            "id: '46f88e82-3001-4e09-b3f4-2099d112ca14'," +
+                            "fileLink: 'lG4Ef88e8CEr8gZ0'," +
                             "name: 'myAwesomeDatas.zip'," +
                             "daysUntilExpired: 3," +
                             "tags: ['new', 'awesome', 'zip']" +
                         "}," +
                         "{" +
-                            "id: 'd9b068eb-8fd9-4c7b-bfb0-c64f3719e3e3'," +
+                            "fileLink: 'lG4Ef88e8CEv8gZ0'," +
                             "name: 'myAwesomeImage.png'," +
                             "daysUntilExpired: 1," +
                             "tags: ['awesome', 'image']" +
@@ -80,7 +80,7 @@ public class FileLinkController {
                 , schema = @Schema(implementation = FileLinkReadDTO.class)
                 , examples = @ExampleObject(value =
                     "{" +
-                        "id: 'd9b068eb-8fd9-4c7b-bfb0-c64f3719e3e3'," +
+                        "fileLink: 'lG4Ef88e8CEv8gZ0'," +
                         "name: 'myAwesomeImage.png'," +
                         "daysUntilExpired: 1," +
                         "tags: ['awesome', 'image']" +
@@ -104,7 +104,7 @@ public class FileLinkController {
         @ApiResponse(responseCode = "200", description = "Fichier correctement supprimé", content = {
             @Content(mediaType = MediaType.TEXT_PLAIN_VALUE
                     , schema = @Schema(implementation = String.class)
-                    , examples = @ExampleObject(value = "633be225-a851-478e-b12a-156a1d8f9ca3"))
+                    , examples = @ExampleObject(value = "lG4Ef88e8CEv8gZ0"))
         }),
     })
     @DeleteMapping("/api/files/{fileLinkPath}")
@@ -121,7 +121,7 @@ public class FileLinkController {
                     , schema = @Schema(implementation = FileLinkReadDTO.class)
                     , examples = @ExampleObject(value =
                     "{" +
-                        "id: 'd9b068eb-8fd9-4c7b-bfb0-c64f3719e3e3'," +
+                        "fileLink: 'lG4Ef88e8CEv8gZ0'," +
                         "name: 'myAwesomeImage.png'," +
                         "daysUntilExpired: 1," +
                         "tags: ['awesome', 'image']" +
