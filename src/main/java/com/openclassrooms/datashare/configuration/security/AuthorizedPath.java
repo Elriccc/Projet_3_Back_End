@@ -11,7 +11,7 @@ public class AuthorizedPath {
     private String SWAGGER_UI_PATH;
 
     public String[] getPermitAllPaths(){
-        return new String[]{"/actuator/**", "/api/register", "/api/login", "/api/auth/**"
+        return new String[]{"/actuator/**", "/api/register", "/api/login", "/api/auth/**", "/api/files/download/**"
                 , API_DOCS_PATH, API_DOCS_PATH+"/**"
                 , SWAGGER_UI_PATH+"/**"};
     }

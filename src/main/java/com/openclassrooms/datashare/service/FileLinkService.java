@@ -30,17 +30,17 @@ public class FileLinkService {
         return null;
     }
 
-    public FileLink getFileLink(String fileId){
+    public FileLink getFileLink(String fileLinkPath){
 
         return null;
     }
 
-    public String deleteFileLink(String fileId){
+    public String deleteFileLink(String fileLinkPath){
 
         return null;
     }
 
-    public FileLink updateFileLinkTags(String fileId, List<String> tags){
+    public FileLink updateFileLinkTags(String fileLinkPath, List<String> tags){
 
         return null;
     }

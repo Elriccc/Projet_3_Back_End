@@ -89,9 +89,9 @@ public class FileLinkController {
         }),
             @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
-    @GetMapping("/api/files/{fileId}")
-    public ResponseEntity<?> downloadFile(@PathVariable String fileId){
-        FileLink fileLink = this.service.getFileLink(fileId);
+    @GetMapping("/api/files/download/{fileLinkPath}")
+    public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody String password){
+        FileLink fileLink = this.service.getFileLink(fileLinkPath);
         FileLinkReadDTO dto = this.mapper.toDTO(fileLink);
 
         MultipartFile file = this.fileService.getFile(fileLink);
@@ -107,9 +107,9 @@ public class FileLinkController {
                     , examples = @ExampleObject(value = "633be225-a851-478e-b12a-156a1d8f9ca3"))
         }),
     })
-    @DeleteMapping("/api/files/{fileId}")
-    public ResponseEntity<?> deleteFile(@PathVariable String fileId){
-        String dbFileId = this.service.deleteFileLink(fileId);
+    @DeleteMapping("/api/files/{fileLinkPath}")
+    public ResponseEntity<?> deleteFile(@PathVariable String fileLinkPath){
+        String dbFileId = this.service.deleteFileLink(fileLinkPath);
         return ResponseEntity.ok(dbFileId);
     }
 
@@ -130,9 +130,9 @@ public class FileLinkController {
             }
         )
     })
-    @PutMapping("/api/files/{fileId}")
-    public ResponseEntity<?> updateTags(@PathVariable String fileId, @RequestBody List<String> tags){
-        FileLink fileLink = this.service.updateFileLinkTags(fileId, tags);
+    @PutMapping("/api/files/{fileLinkPath}")
+    public ResponseEntity<?> updateTags(@PathVariable String fileLinkPath, @RequestBody List<String> tags){
+        FileLink fileLink = this.service.updateFileLinkTags(fileLinkPath, tags);
         return ResponseEntity.ok(this.mapper.toDTO(fileLink));
     }
 }

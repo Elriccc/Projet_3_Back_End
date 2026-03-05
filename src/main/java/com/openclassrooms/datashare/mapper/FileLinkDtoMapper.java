@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface FileLinkDtoMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fileLink", ignore = true)
     @Mapping(target = "created_at", ignore = true)
     @Mapping(target = "updated_at", ignore = true)
     @Mapping(target = "usePassword", expression = "java(mapUsePassword(fileLinkUploadDTO))")

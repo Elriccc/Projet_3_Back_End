@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class FileLinkReadDTO {
     @NotBlank
-    private String id;
+    private String fileLink;
     @NotBlank
     private String name;
     @Min(0)

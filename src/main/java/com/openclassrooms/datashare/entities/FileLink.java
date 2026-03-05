@@ -27,6 +27,10 @@ public class FileLink {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotBlank
+    @Column(name = "fileLink", nullable = false, unique = true)
+    private String fileLink;
+
     @Column(name = "password")
     private String password;
 
