@@ -12,13 +12,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 @Configuration
 public class AppConfig {
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-        configurer.setLocation(new FileSystemResource(".env"));
-        return configurer;
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) { return authConfig.getAuthenticationManager(); }
 
     @Bean

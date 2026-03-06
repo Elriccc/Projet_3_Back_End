@@ -31,6 +31,8 @@
 		<postgres.version>42.7.10</postgres.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<lombok.version>1.18.32</lombok.version>
+		<springframeworkcloud.version>5.0.1</springframeworkcloud.version>
+		<springvault.version>4.0.1</springvault.version>
 		<jsonwebtoken.version>0.13.0</jsonwebtoken.version>
 		<mockito.version>5.21.0</mockito.version>
 		<testcontainerscore.version>2.0.3</testcontainerscore.version>
@@ -102,6 +104,16 @@
 			<version>${mapstruct.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-vault-config</artifactId>
+			<version>${springframeworkcloud.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.vault</groupId>
+			<artifactId>spring-vault-core</artifactId>
+			<version>${springvault.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
