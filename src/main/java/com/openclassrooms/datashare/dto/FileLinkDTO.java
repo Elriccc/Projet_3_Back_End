@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Data
-public class FileLinkReadDTO {
+public class FileLinkDTO {
     @NotBlank
     private String fileLink;
     @NotBlank

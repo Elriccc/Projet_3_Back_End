@@ -1,15 +1,19 @@
 package com.openclassrooms.datashare.service;
 
 import com.openclassrooms.datashare.entities.FileLink;
+import com.openclassrooms.datashare.entities.User;
 import com.openclassrooms.datashare.repository.FileLinkRepository;
 import com.openclassrooms.datashare.repository.UserRepository;
 import com.openclassrooms.datashare.validator.FileLinkValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service

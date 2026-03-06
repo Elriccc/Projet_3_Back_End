@@ -1,6 +1,6 @@
 package com.openclassrooms.datashare.controller;
 
-import com.openclassrooms.datashare.dto.FileLinkReadDTO;
+import com.openclassrooms.datashare.dto.FileLinkDTO;
 import com.openclassrooms.datashare.dto.FileLinkUploadDTO;
 import com.openclassrooms.datashare.entities.FileLink;
 import com.openclassrooms.datashare.mapper.FileLinkDtoMapper;
@@ -47,7 +47,7 @@ public class FileLinkController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Fichiers récupérés", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
-                , array = @ArraySchema(schema = @Schema(implementation = FileLinkReadDTO.class))
+                , array = @ArraySchema(schema = @Schema(implementation = FileLinkDTO.class))
                 , examples = @ExampleObject(value =
                     "[" +
                         "{" +
@@ -69,7 +69,7 @@ public class FileLinkController {
     })
     @GetMapping("/api/files")
     public ResponseEntity<?> retrieveAllFiles(){
-        List<FileLinkReadDTO> DTOs = this.service.getAllFileLinksByAccount().stream().map(this.mapper::toDTO).toList();
+        List<FileLinkDTO> DTOs = this.service.getAllFileLinksByAccount().stream().map(this.mapper::toDTO).toList();
         return ResponseEntity.ok(DTOs);
     }
 
@@ -77,7 +77,7 @@ public class FileLinkController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Fichier correctement téléchargé", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
-                , schema = @Schema(implementation = FileLinkReadDTO.class)
+                , schema = @Schema(implementation = FileLinkDTO.class)
                 , examples = @ExampleObject(value =
                     "{" +
                         "fileLink: 'lG4Ef88e8CEv8gZ0'," +
@@ -92,7 +92,7 @@ public class FileLinkController {
     @GetMapping("/api/files/download/{fileLinkPath}")
     public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody String password){
         FileLink fileLink = this.service.getFileLink(fileLinkPath);
-        FileLinkReadDTO dto = this.mapper.toDTO(fileLink);
+        FileLinkDTO dto = this.mapper.toDTO(fileLink);
         if(this.service.isPasswordCorrect(fileLink, password)) {
             MultipartFile file = this.fileService.getFile(fileLink);
             dto.setFile(file);
@@ -119,7 +119,7 @@ public class FileLinkController {
         @ApiResponse(responseCode = "200", description = "Tags mis à jour"
             , content = {
                 @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
-                    , schema = @Schema(implementation = FileLinkReadDTO.class)
+                    , schema = @Schema(implementation = FileLinkDTO.class)
                     , examples = @ExampleObject(value =
                     "{" +
                         "fileLink: 'lG4Ef88e8CEv8gZ0'," +
