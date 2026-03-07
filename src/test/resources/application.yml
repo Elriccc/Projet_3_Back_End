@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:15.4:///datashare
+    username: test
+    password: test
+    jpa:
+      hibernate:
+        ddl-auto: create-drop
+      show-sql: true
+  config:
+    activate:
+      on-profile: test
+  cloud:
+    vault:
+      enabled: false
+      kv:
+        enabled: false
+  import: ""
+
+app:
+  data-path: uploads/
+
+jwt:
+  secret: "aIj1CcY0iHDYqTjbSxqMB7TC3a8imcYghjO0WSyHkzG"
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.test.context: INFO
