@@ -7,7 +7,9 @@ services:
     restart: always
     ports:
       - "8080:8080"
+      - "5005:5005"
     volumes:
+      - ./target:/app
       - ./uploads:${DATA_PATH}
     environment:
       DB_USER: '${DB_USER}'
