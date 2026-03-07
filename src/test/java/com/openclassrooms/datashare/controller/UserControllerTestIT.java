@@ -75,7 +75,7 @@ public class UserControllerTestIT {
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
-                    .andExpect(MockMvcResultMatchers.status().is5xxServerError());
+                    .andExpect(MockMvcResultMatchers.status().isBadRequest());
         }
 
         @DisplayName("Existant déjà renvoie une erreur")
