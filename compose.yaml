@@ -28,6 +28,9 @@ services:
       dockerfile: Dockerfile
     container_name: datashare_frontend
     restart: always
+    volumes:
+      - ${FRONT_END_CONTEXT}:/app
+      - /app/node_modules
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`localhost`)"
