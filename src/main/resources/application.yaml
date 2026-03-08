@@ -27,6 +27,9 @@ spring:
   config:
     import: optional:vault://
 
+server:
+  port: 8081
+
 app:
   data-path: ${DATA_PATH}
 
