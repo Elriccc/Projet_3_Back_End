@@ -1,4 +1,15 @@
 services:
+  frontend:
+    build:
+      context: ${FRONT_END_CONTEXT}
+      dockerfile: Dockerfile
+    container_name: datashare_frontend
+    restart: always
+    ports:
+      - "4200:4200"
+    networks:
+      - app_network
+
   backend:
     build:
       context: .
