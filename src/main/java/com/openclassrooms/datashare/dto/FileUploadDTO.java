@@ -15,5 +15,6 @@ public class FileUploadDTO {
     @Min(1)
     @Max(7)
     private int expirationTime;
+    @NotBlank
     private MultipartFile file;
 }

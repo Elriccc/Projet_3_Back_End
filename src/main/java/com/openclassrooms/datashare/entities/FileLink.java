@@ -37,11 +37,9 @@ public class FileLink {
     @Column(name = "usePassword")
     private Boolean usePassword;
 
-    @NotBlank
     @Column(name = "expirationDate", nullable = false)
     private LocalDate expirationDate;
 
-    @NotBlank
     @Column(name = "isExpired")
     private Boolean isExpired;
 
