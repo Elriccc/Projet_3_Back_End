@@ -32,6 +32,7 @@ public class FileLinkService {
     private final AuthenticationService authenticationService;
 
     public FileLink saveFileLink(FileLink fileLink){
+        this.validator.validate(fileLink);
         return this.repository.save(fileLink);
     }
 
