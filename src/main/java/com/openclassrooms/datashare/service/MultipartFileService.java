@@ -24,7 +24,6 @@ public class MultipartFileService {
     @Value("${app.no-user-directory}")
     private String NO_USER_DIRECTORY;
 
-    public void addFile(MultipartFile file){
     public void addFile(FileLink fileLink, MultipartFile multipartFile) throws IOException {
 
     }

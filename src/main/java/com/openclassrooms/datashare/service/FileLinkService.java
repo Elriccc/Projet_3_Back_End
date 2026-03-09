@@ -1,5 +1,6 @@
 package com.openclassrooms.datashare.service;
 
+import com.openclassrooms.datashare.configuration.security.AuthenticationService;
 import com.openclassrooms.datashare.entities.FileLink;
 import com.openclassrooms.datashare.entities.User;
 import com.openclassrooms.datashare.repository.FileLinkRepository;
@@ -27,10 +28,8 @@ public class FileLinkService {
     private final FileLinkValidator validator;
     private final FileLinkRepository repository;
     private final UserRepository userRepository;
-
-    public void saveFileLink(FileLink fileLink){
     private final PasswordEncoder pwdEncoder;
-
+    private final AuthenticationService authenticationService;
 
     public FileLink saveFileLink(FileLink fileLink){
         return this.repository.save(fileLink);
