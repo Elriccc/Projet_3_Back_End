@@ -57,16 +57,18 @@ public class FileController {
                 , examples = @ExampleObject(value =
                     "[" +
                         "{" +
-                            "fileLink: 'lG4Ef88e8CEr8gZ0'," +
-                            "name: 'myAwesomeDatas.zip'," +
-                            "daysUntilExpired: 3," +
-                            "tags: ['new', 'awesome', 'zip']" +
-                        "}," +
+                            "fileLink: 'lG4Ef88e8CEr8gZ0', " +
+                            "name: 'myAwesomeDatas.zip', " +
+                            "daysUntilExpired: 3, " +
+                            "tags: ['new', 'awesome', 'zip'], " +
+                            "usePassword: true" +
+                        "}, " +
                         "{" +
-                            "fileLink: 'lG4Ef88e8CEv8gZ0'," +
-                            "name: 'myAwesomeImage.png'," +
-                            "daysUntilExpired: 1," +
-                            "tags: ['awesome', 'image']" +
+                            "fileLink: 'lG4Ef88e8CEv8gZ0', " +
+                            "name: 'myAwesomeImage.png', " +
+                            "daysUntilExpired: 1, " +
+                            "tags: ['awesome', 'image'], " +
+                            "usePassword: false" +
                         "}," +
                     "]"
                 )
@@ -86,10 +88,11 @@ public class FileController {
                 , schema = @Schema(implementation = FileDTO.class)
                 , examples = @ExampleObject(value =
                     "{" +
-                        "fileLink: 'lG4Ef88e8CEv8gZ0'," +
-                        "name: 'myAwesomeImage.png'," +
-                        "daysUntilExpired: 1," +
-                        "tags: ['awesome', 'image']" +
+                        "fileLink: 'lG4Ef88e8CEv8gZ0', " +
+                        "name: 'myAwesomeImage.png', " +
+                        "daysUntilExpired: 1, " +
+                        "tags: ['awesome', 'image'], " +
+                        "usePassword: false" +
                     "}")
                 )
         }),
@@ -128,10 +131,11 @@ public class FileController {
                     , schema = @Schema(implementation = FileDTO.class)
                     , examples = @ExampleObject(value =
                     "{" +
-                        "fileLink: 'lG4Ef88e8CEv8gZ0'," +
-                        "name: 'myAwesomeImage.png'," +
-                        "daysUntilExpired: 1," +
-                        "tags: ['awesome', 'image']" +
+                        "fileLink: 'lG4Ef88e8CEv8gZ0', " +
+                        "name: 'myAwesomeImage.png', " +
+                        "daysUntilExpired: 1, " +
+                        "tags: ['awesome', 'image'], " +
+                        "usePassword: false" +
                     "}")
                 )
             }
