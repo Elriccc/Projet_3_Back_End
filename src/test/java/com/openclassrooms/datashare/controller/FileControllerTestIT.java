@@ -19,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Testcontainers
-public class FileLinkControllerTestIT {
+public class FileControllerTestIT {
     @Container
     static PostgreSQLContainer<?> psqlContainer = new PostgreSQLContainer<>("postgres:18.3");
 

@@ -1,9 +1,9 @@
 package com.openclassrooms.datashare.controller;
 
-import com.openclassrooms.datashare.dto.FileLinkDTO;
-import com.openclassrooms.datashare.dto.FileLinkUploadDTO;
+import com.openclassrooms.datashare.dto.FileDTO;
+import com.openclassrooms.datashare.dto.FileUploadDTO;
 import com.openclassrooms.datashare.entities.FileLink;
-import com.openclassrooms.datashare.mapper.FileLinkDtoMapper;
+import com.openclassrooms.datashare.mapper.FileDtoMapper;
 import com.openclassrooms.datashare.service.FileLinkService;
 import com.openclassrooms.datashare.service.MultipartFileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,25 +21,31 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "FileLinkController", description = "Endpoints permettant d'opérer sur les fichiers")
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
-public class FileLinkController {
+public class FileController {
     private final FileLinkService service;
     private final MultipartFileService fileService;
-    private final FileLinkDtoMapper mapper;
+    private final FileDtoMapper mapper;
 
     @Operation(method = "addFiles", summary = "Ajouter un fichier", description = "Ajouter un fichier avec un temps d'expiration et optionnellement un mot de passe")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Fichier ajouté"),
             @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
-    @PostMapping("/api/files")
-    public ResponseEntity<?> addFile(@RequestBody FileLinkUploadDTO fileLinkUploadDTO){
-        this.service.saveFileLink(this.mapper.toEntity(fileLinkUploadDTO));
+    @PostMapping(value = "/api/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addFile(@ModelAttribute FileUploadDTO fileUploadDTO){
+        FileLink fileLink = this.service.saveFileLink(this.mapper.toEntity(fileUploadDTO));
+        try {
+            this.fileService.addFile(fileLink, fileUploadDTO.getFile());
+        } catch(IOException e){
+            //
+        }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -47,7 +53,7 @@ public class FileLinkController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Fichiers récupérés", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
-                , array = @ArraySchema(schema = @Schema(implementation = FileLinkDTO.class))
+                , array = @ArraySchema(schema = @Schema(implementation = FileDTO.class))
                 , examples = @ExampleObject(value =
                     "[" +
                         "{" +
@@ -69,7 +75,7 @@ public class FileLinkController {
     })
     @GetMapping("/api/files")
     public ResponseEntity<?> retrieveAllFiles(){
-        List<FileLinkDTO> DTOs = this.service.getAllFileLinksByAccount().stream().map(this.mapper::toDTO).toList();
+        List<FileDTO> DTOs = this.service.getAllFileLinksByAccount().stream().map(this.mapper::toDTO).toList();
         return ResponseEntity.ok(DTOs);
     }
 
@@ -77,7 +83,7 @@ public class FileLinkController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Fichier correctement téléchargé", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
-                , schema = @Schema(implementation = FileLinkDTO.class)
+                , schema = @Schema(implementation = FileDTO.class)
                 , examples = @ExampleObject(value =
                     "{" +
                         "fileLink: 'lG4Ef88e8CEv8gZ0'," +
@@ -92,7 +98,7 @@ public class FileLinkController {
     @GetMapping("/api/files/download/{fileLinkPath}")
     public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody String password){
         FileLink fileLink = this.service.getFileLink(fileLinkPath);
-        FileLinkDTO dto = this.mapper.toDTO(fileLink);
+        FileDTO dto = this.mapper.toDTO(fileLink);
         if(this.service.isPasswordCorrect(fileLink, password)) {
             MultipartFile file = this.fileService.getFile(fileLink);
             dto.setFile(file);
@@ -119,7 +125,7 @@ public class FileLinkController {
         @ApiResponse(responseCode = "200", description = "Tags mis à jour"
             , content = {
                 @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
-                    , schema = @Schema(implementation = FileLinkDTO.class)
+                    , schema = @Schema(implementation = FileDTO.class)
                     , examples = @ExampleObject(value =
                     "{" +
                         "fileLink: 'lG4Ef88e8CEv8gZ0'," +

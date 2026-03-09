@@ -5,13 +5,17 @@ import com.openclassrooms.datashare.entities.User;
 import com.openclassrooms.datashare.repository.FileLinkRepository;
 import com.openclassrooms.datashare.repository.UserRepository;
 import com.openclassrooms.datashare.validator.FileLinkValidator;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,8 +29,11 @@ public class FileLinkService {
     private final UserRepository userRepository;
 
     public void saveFileLink(FileLink fileLink){
+    private final PasswordEncoder pwdEncoder;
 
 
+    public FileLink saveFileLink(FileLink fileLink){
+        return this.repository.save(fileLink);
     }
 
     public List<FileLink> getAllFileLinksByAccount(){

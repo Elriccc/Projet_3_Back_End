@@ -7,7 +7,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class FileLinkUploadDTO {
+public class FileUploadDTO {
     @NotBlank
     private String name;
     @NotBlank
