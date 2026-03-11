@@ -4,7 +4,6 @@ import com.openclassrooms.datashare.configuration.security.CustomJwtService;
 import com.openclassrooms.datashare.configuration.security.CustomUserDetailService;
 import com.openclassrooms.datashare.entities.User;
 import com.openclassrooms.datashare.repository.UserRepository;
-import com.openclassrooms.datashare.validator.UserValidator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +12,12 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
-    private final UserValidator validator;
     private final UserRepository repository;
     private final AuthenticationProvider authenticationManager;
     private final CustomUserDetailService userDetailService;
@@ -30,26 +25,12 @@ public class UserService {
     private final CustomJwtService jwtService;
 
     public void register(User user) {
-        Assert.notNull(user, "User must not be null");
         log.info("Registering new user");
-
-        Optional<User> optionalUser = repository.findByLogin(user.getLogin());
-        if (optionalUser.isPresent()) {
-            throw new IllegalArgumentException(String.format("User with login %s already exists", user.getLogin()));
-        }
-        validator.validate(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
     }
 
     public String login(String login, String password) {
-        Assert.notNull(login, "Login must not be null");
-        Assert.notNull(password, "Password must not be null");
-        User user = repository.findByLogin(login).stream().findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
-        if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new IllegalArgumentException("Password does not match");
-        }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         return jwtService.generateToken(userDetailService.loadUserByUsername(login));
     }

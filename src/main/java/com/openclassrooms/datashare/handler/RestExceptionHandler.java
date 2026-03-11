@@ -2,11 +2,14 @@ package com.openclassrooms.datashare.handler;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,52 +17,57 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.nio.file.AccessDeniedException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Hidden
 @RestControllerAdvice
+@Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class, ConstraintViolationException.class, TransactionSystemException.class})
-    protected ResponseEntity<Object> handleConflict(RuntimeException runtimeException, WebRequest request) {
-        logError(runtimeException);
-        return handleExceptionInternal(runtimeException, getErrorDetails(runtimeException, request), new HttpHeaders(),
-                HttpStatus.BAD_REQUEST, request);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex) {
+        List<FieldValidationError> fieldErrors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> new FieldValidationError(
+                        error.getField(),
+                        error.getDefaultMessage(),
+                        error.getRejectedValue()
+                ))
+                .collect(Collectors.toList());
+
+        ValidationErrorResponse response = ValidationErrorResponse.builder()
+                .timestamp(Instant.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Validation Failed")
+                .message("One or more fields have validation errors")
+                .fieldErrors(fieldErrors)
+                .build();
+
+        log.warn("Validation failed: {}", fieldErrors);
+
+        return ResponseEntity.badRequest().body(response);
     }
 
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(value = {BadCredentialsException.class})
-    protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException badCredentialsException,
-                                                                   WebRequest request) {
-        logError(badCredentialsException);
-        return handleExceptionInternal(badCredentialsException, getErrorDetails(badCredentialsException, request),
-                new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+    @ExceptionHandler(BadCredentialsException.class)
+    protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException badCredentialsException) {
+        log.warn("Bad credentials: {}", badCredentialsException.getLocalizedMessage());
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ExceptionHandler(value = {AccessDeniedException.class})
-    protected ResponseEntity<Object> handleForbiddenException(AccessDeniedException accessDeniedException,
-                                                              WebRequest request) {
-        logError(accessDeniedException);
-        return handleExceptionInternal(accessDeniedException, getErrorDetails(accessDeniedException, request),
-                new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    @ExceptionHandler(AccessDeniedException.class)
+    protected ResponseEntity<Object> handleForbiddenException(AccessDeniedException accessDeniedException) {
+        log.warn("Access denied: {}", accessDeniedException.getLocalizedMessage());
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {Exception.class})
-    protected ResponseEntity<Object> handleException(RuntimeException runtimeException, WebRequest request) {
-        logError(runtimeException);
-        return handleExceptionInternal(runtimeException, "Internal Server error", new HttpHeaders(),
-                HttpStatus.INTERNAL_SERVER_ERROR, request);
-    }
-
-    private void logError(Exception exception) {
-        logger.error(exception.getMessage(), exception);
-    }
-
-    private ErrorDetails getErrorDetails(Exception exception, WebRequest request) {
-        return new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
+    protected ResponseEntity<Object> handleException(RuntimeException runtimeException) {
+        log.warn("Unhandled error: {}", runtimeException.getMessage());
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

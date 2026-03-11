@@ -3,6 +3,7 @@ package com.openclassrooms.datashare.controller;
 import com.openclassrooms.datashare.dto.UserDTO;
 import com.openclassrooms.datashare.mapper.UserDtoMapper;
 import com.openclassrooms.datashare.service.UserService;
+import com.openclassrooms.datashare.validation.UserValidationGroups;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "UserController", description = "Endpoints permettant de contrôler l'authentification")
@@ -30,7 +32,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
     @PostMapping("/api/register")
-    public ResponseEntity<?> register(@RequestBody UserDTO userDto) {
+    public ResponseEntity<?> register(@Validated(UserValidationGroups.Register.class) @RequestBody UserDTO userDto) {
         service.register(mapper.toEntity(userDto));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -45,7 +47,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO userDto) {
+    public ResponseEntity<?> login(@Validated(UserValidationGroups.Login.class) @RequestBody UserDTO userDto) {
         String jwt = service.login(userDto.getLogin(), userDto.getPassword());
         return ResponseEntity.ok(jwt);
     }
