@@ -12,11 +12,11 @@ import lombok.Data;
 @Data
 @UserMustExist(groups = UserValidationGroups.Login.class, login = "login", password = "password")
 public class UserDTO {
-    @NotBlank(message = "Le login ne peut pas être vide")
-    @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Le login n'est pas un email")
+    @NotBlank(groups = {UserValidationGroups.Login.class, UserValidationGroups.Register.class}, message = "Le login ne peut pas être vide")
+    @Email(groups = {UserValidationGroups.Login.class, UserValidationGroups.Register.class}, regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Le login n'est pas un email")
     @UniqueLogin(groups = UserValidationGroups.Register.class)
     private String login;
-    @NotBlank(message = "Le mot de passe ne peut pas être vide")
-    @Size(min = 8, message = "Le mot de passe doit faire au minimum 8 caractères")
+    @NotBlank(groups = {UserValidationGroups.Login.class, UserValidationGroups.Register.class}, message = "Le mot de passe ne peut pas être vide")
+    @Size(groups = {UserValidationGroups.Login.class, UserValidationGroups.Register.class}, min = 8, message = "Le mot de passe doit faire au minimum 8 caractères")
     private String password;
 }

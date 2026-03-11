@@ -38,7 +38,11 @@ public class UserServiceTest {
     @Mock
     private AuthenticationProvider authenticationManager;
     @Mock
+    private Authentication authentication;
+    @Mock
     private CustomUserDetailService userDetailService;
+    @Mock
+    private UserDetails userDetails;
     @Mock
     private CustomJwtService jwtUtils;
     @Mock
@@ -82,9 +86,9 @@ public class UserServiceTest {
             User user = new User();
             user.setLogin(LOGIN);
             user.setPassword(PASSWORD);
-            when(repository.findByLogin(any())).thenReturn(Optional.of(user));
-            when(passwordEncoder.matches(any(String.class), any(String.class))).thenReturn(true);
-            lenient().when(jwtUtils.generateToken(any(UserDetails.class))).thenReturn(JWT);
+            when(authenticationManager.authenticate(any(Authentication.class))).thenReturn(authentication);
+            when(jwtUtils.generateToken(any(UserDetails.class))).thenReturn(JWT);
+            when(userDetailService.loadUserByUsername(any(String.class))).thenReturn(userDetails);
 
             //WHEN
             final String result = service.login(LOGIN, PASSWORD);
