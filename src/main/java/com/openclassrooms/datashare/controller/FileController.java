@@ -58,15 +58,19 @@ public class FileController {
                 , examples = @ExampleObject(value =
                     "[" +
                         "{" +
-                            "fileLink: 'lG4Ef88e8CEr8gZ0', " +
-                            "name: 'myAwesomeDatas.zip', " +
+                            "fileLink: 'lG4Ef', " +
+                            "name: 'myAwesomeDatas', " +
+                            "extension: 'zip', " +
+                            "size: 180000, " +
                             "daysUntilExpired: 3, " +
                             "tags: ['new', 'awesome', 'zip'], " +
                             "usePassword: true" +
                         "}, " +
                         "{" +
-                            "fileLink: 'lG4Ef88e8CEv8gZ0', " +
-                            "name: 'myAwesomeImage.png', " +
+                            "fileLink: '88e8p', " +
+                            "name: 'myAwesomeImage', " +
+                            "extension: 'png', " +
+                            "size: 15000, " +
                             "daysUntilExpired: 1, " +
                             "tags: ['awesome', 'image'], " +
                             "usePassword: false" +
@@ -89,8 +93,10 @@ public class FileController {
                 , schema = @Schema(implementation = FileDTO.class)
                 , examples = @ExampleObject(value =
                     "{" +
-                        "fileLink: 'lG4Ef88e8CEv8gZ0', " +
-                        "name: 'myAwesomeImage.png', " +
+                        "fileLink: 'lG4Eh', " +
+                        "name: 'myAwesomeImage', " +
+                        "extension: 'png', " +
+                        "size: 15000, " +
                         "daysUntilExpired: 1, " +
                         "tags: ['awesome', 'image'], " +
                         "usePassword: false" +
@@ -132,8 +138,10 @@ public class FileController {
                     , schema = @Schema(implementation = FileDTO.class)
                     , examples = @ExampleObject(value =
                     "{" +
-                        "fileLink: 'lG4Ef88e8CEv8gZ0', " +
-                        "name: 'myAwesomeImage.png', " +
+                        "fileLink: 'lG4Ef', " +
+                        "name: 'myAwesomeImage', " +
+                        "extension: 'png', " +
+                        "size: 15000, " +
                         "daysUntilExpired: 1, " +
                         "tags: ['awesome', 'image'], " +
                         "usePassword: false" +
