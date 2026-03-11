@@ -1,6 +1,5 @@
 package com.openclassrooms.datashare.configuration;
 
-import com.openclassrooms.datashare.validator.FileLinkValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

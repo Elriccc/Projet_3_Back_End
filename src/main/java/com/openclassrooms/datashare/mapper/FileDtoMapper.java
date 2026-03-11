@@ -4,6 +4,7 @@ import ch.qos.logback.core.util.StringUtil;
 import com.openclassrooms.datashare.dto.FileDTO;
 import com.openclassrooms.datashare.dto.FileUploadDTO;
 import com.openclassrooms.datashare.entities.FileLink;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -18,6 +19,9 @@ public interface FileDtoMapper {
     @Mapping(target = "fileLink", ignore = true)
     @Mapping(target = "created_at", ignore = true)
     @Mapping(target = "updated_at", ignore = true)
+    @Mapping(target = "name", expression = "java(mapName(fileUploadDTO))")
+    @Mapping(target = "extension", expression = "java(mapExtension(fileUploadDTO))")
+    @Mapping(target = "size", expression = "java(mapSize(fileUploadDTO))")
     @Mapping(target = "usePassword", expression = "java(mapUsePassword(fileUploadDTO))")
     @Mapping(target = "expirationDate", expression = "java(mapExpirationDate(fileUploadDTO))")
     @Mapping(target = "isExpired", ignore = true)
@@ -25,12 +29,52 @@ public interface FileDtoMapper {
     @Mapping(target = "user", ignore = true)
     FileLink toEntity(FileUploadDTO fileUploadDTO);
 
+    default String mapName(FileUploadDTO fileUploadDTO){
+        return fileUploadDTO.getFile() != null
+                && fileUploadDTO.getFile().getOriginalFilename() != null
+                && fileUploadDTO.getFile().getOriginalFilename().contains(".")
+                    ? fileUploadDTO.getFile().getOriginalFilename().substring(0, fileUploadDTO.getFile().getOriginalFilename().lastIndexOf("."))
+                    : null;
+    }
+
+    default String mapExtension(FileUploadDTO fileUploadDTO){
+        return fileUploadDTO.getFile() != null
+                && fileUploadDTO.getFile().getOriginalFilename() != null
+                && fileUploadDTO.getFile().getOriginalFilename().contains(".")
+                    ? fileUploadDTO.getFile().getOriginalFilename().substring(fileUploadDTO.getFile().getOriginalFilename().lastIndexOf(".") + 1)
+                    : null;
+    }
+
+    default long mapSize(FileUploadDTO fileUploadDTO){
+        return fileUploadDTO.getFile() != null? fileUploadDTO.getFile().getSize() : 0;
+        /* A utiliser dans le front pour parser la size
+        String sizeStr;
+        if(size < 1000){
+            sizeStr = size + " o";
+        } else if (size < 1000 * 1000) {
+            sizeStr = Double.valueOf((double) size / 1000).intValue() + " Ko";
+        } else if (size < 1000 * 1000 * 1000){
+            sizeStr = Double.valueOf((double) size / (1000 * 1000)).intValue() + "";
+            if(size % (1000*1000) >= 1000*100) {
+                sizeStr += "," + StringUtils.leftPad(String.valueOf(size % 1000), 4, "0").substring(0, 2);
+            }
+            sizeStr += " Mo";
+        } else {
+            sizeStr = Double.valueOf((double)(size/(1000*1000*1000))).intValue() + "";
+            if(size % (1000*1000*1000) >= (1000*1000*100)) {
+                sizeStr += "," + StringUtils.leftPad(String.valueOf(size % (1000*1000*1000)), 8, "0").substring(0, 2);
+            }
+            sizeStr += " Go";
+        }
+        return sizeStr;*/
+    }
+
     default boolean mapUsePassword(FileUploadDTO fileUploadDTO){
         return !StringUtil.isNullOrEmpty(fileUploadDTO.getPassword());
     }
 
     default LocalDate mapExpirationDate(FileUploadDTO fileUploadDTO){
-        return LocalDate.now().plusDays(fileUploadDTO.getExpirationTime());
+        return fileUploadDTO.getExpirationTime() > 0 && fileUploadDTO.getExpirationTime() < 7? LocalDate.now().plusDays(fileUploadDTO.getExpirationTime()) : null;
     }
 
     @Mapping(target = "file", ignore = true)

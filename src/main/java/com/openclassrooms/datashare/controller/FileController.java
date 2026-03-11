@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,8 +39,8 @@ public class FileController {
             @ApiResponse(responseCode = "201", description = "Fichier ajouté"),
             @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
-    @PostMapping(value = "/api/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> addFile(@ModelAttribute FileUploadDTO fileUploadDTO){
+    @PostMapping("/api/files")
+    public ResponseEntity<?> addFile(@Validated @ModelAttribute FileUploadDTO fileUploadDTO){
         FileLink fileLink = this.service.saveFileLink(this.mapper.toEntity(fileUploadDTO));
         try {
             this.fileService.addFile(fileLink, fileUploadDTO.getFile());

@@ -9,12 +9,11 @@ import java.util.List;
 
 @Data
 public class FileDTO {
-    @NotBlank
     private String fileLink;
-    @NotBlank
     private String name;
+    private String extension;
+    private long size;
     private boolean usePassword;
-    @Min(0)
     private int daysUntilExpired;
     private List<String> tags;
     private MultipartFile file;

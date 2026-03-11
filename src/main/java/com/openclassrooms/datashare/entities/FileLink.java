@@ -1,7 +1,9 @@
 package com.openclassrooms.datashare.entities;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,18 +30,30 @@ public class FileLink {
     private String name;
 
     @NotBlank
+    @Column(name = "extension", nullable = false)
+    private String extension;
+
+    @NotNull
+    @Column(name = "size", nullable = false)
+    private long size;
+
+    @NotBlank
     @Column(name = "fileLink", nullable = false, unique = true)
     private String fileLink;
 
+    @Nullable
     @Column(name = "password")
     private String password;
 
+    @NotNull
     @Column(name = "usePassword")
     private Boolean usePassword;
 
+    @NotNull
     @Column(name = "expirationDate", nullable = false)
     private LocalDate expirationDate;
 
+    @NotNull
     @Column(name = "isExpired")
     private Boolean isExpired;
 
