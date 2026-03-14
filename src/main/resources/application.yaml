@@ -13,8 +13,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 8192MB
-      max-request-size: 8193MB
+      max-file-size: 1000MB
+      max-request-size: 1010MB
   cloud:
     vault:
       fail-fast: false
