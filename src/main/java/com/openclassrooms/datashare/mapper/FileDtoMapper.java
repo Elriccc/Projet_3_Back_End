@@ -47,26 +47,6 @@ public interface FileDtoMapper {
 
     default long mapSize(FileUploadDTO fileUploadDTO){
         return fileUploadDTO.getFile() != null? fileUploadDTO.getFile().getSize() : 0;
-        /* A utiliser dans le front pour parser la size
-        String sizeStr;
-        if(size < 1000){
-            sizeStr = size + " o";
-        } else if (size < 1000 * 1000) {
-            sizeStr = Double.valueOf((double) size / 1000).intValue() + " Ko";
-        } else if (size < 1000 * 1000 * 1000){
-            sizeStr = Double.valueOf((double) size / (1000 * 1000)).intValue() + "";
-            if(size % (1000*1000) >= 1000*100) {
-                sizeStr += "," + StringUtils.leftPad(String.valueOf(size % 1000), 4, "0").substring(0, 2);
-            }
-            sizeStr += " Mo";
-        } else {
-            sizeStr = Double.valueOf((double)(size/(1000*1000*1000))).intValue() + "";
-            if(size % (1000*1000*1000) >= (1000*1000*100)) {
-                sizeStr += "," + StringUtils.leftPad(String.valueOf(size % (1000*1000*1000)), 8, "0").substring(0, 2);
-            }
-            sizeStr += " Go";
-        }
-        return sizeStr;*/
     }
 
     default boolean mapUsePassword(FileUploadDTO fileUploadDTO){
@@ -83,7 +63,7 @@ public interface FileDtoMapper {
 
     default int mapDaysUntilExpired(FileLink fileLink){
         if(fileLink.getExpirationDate() != null && fileLink.getExpirationDate().isAfter(LocalDate.now())) {
-            return (int) ChronoUnit.DAYS.between(fileLink.getExpirationDate(), LocalDate.now());
+            return (int) ChronoUnit.DAYS.between(LocalDate.now(), fileLink.getExpirationDate());
         }
         return 0;
     }
