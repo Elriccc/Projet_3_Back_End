@@ -6,6 +6,7 @@ import com.openclassrooms.datashare.entities.FileLink;
 import com.openclassrooms.datashare.mapper.FileDtoMapper;
 import com.openclassrooms.datashare.service.FileLinkService;
 import com.openclassrooms.datashare.service.MultipartFileService;
+import com.openclassrooms.datashare.validation.FilePassword;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,8 +37,22 @@ public class FileController {
 
     @Operation(method = "addFiles", summary = "Ajouter un fichier", description = "Ajouter un fichier avec un temps d'expiration et optionnellement un mot de passe")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Fichier ajouté"),
-            @ApiResponse(responseCode = "400", description = "Requête incorrecte")
+        @ApiResponse(responseCode = "201", description = "Fichier ajouté", content = {
+            @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
+            , schema = @Schema(implementation = FileDTO.class)
+            , examples = @ExampleObject(value =
+                "{" +
+                    "fileLink: 'lG4Eh', " +
+                    "name: 'myAwesomeImage', " +
+                    "extension: 'png', " +
+                    "size: 15000, " +
+                    "daysUntilExpired: 1, " +
+                    "tags: ['awesome', 'image'], " +
+                    "usePassword: false" +
+                "}")
+            )
+        }),
+        @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
     @PostMapping("/api/files")
     public ResponseEntity<?> addFile(@Validated @ModelAttribute FileUploadDTO fileUploadDTO){
@@ -47,7 +62,7 @@ public class FileController {
         } catch(IOException e){
             //
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(this.mapper.toDTO(fileLink), HttpStatus.CREATED);
     }
 
     @Operation(method = "retrieveAllFiles", summary = "Récupérer tous les fichiers", description = "Récupérer toutes les mêta-données des fichiers d'un utilisateur")
@@ -100,13 +115,14 @@ public class FileController {
                         "daysUntilExpired: 1, " +
                         "tags: ['awesome', 'image'], " +
                         "usePassword: false" +
-                    "}")
+                    "}"
                 )
+            )
         }),
-            @ApiResponse(responseCode = "400", description = "Requête incorrecte")
+        @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
-    @GetMapping("/api/files/download/{fileLinkPath}")
-    public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody String password){
+    @PostMapping("/api/files/download/{fileLinkPath}")
+    public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody @FilePassword String password){
         FileLink fileLink = this.service.getFileLink(fileLinkPath);
         FileDTO dto = this.mapper.toDTO(fileLink);
         if(this.service.isPasswordCorrect(fileLink, password)) {
