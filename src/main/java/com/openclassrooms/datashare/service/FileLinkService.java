@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -24,26 +25,40 @@ public class FileLinkService {
     private final PasswordEncoder pwdEncoder;
     private final AuthenticationService authenticationService;
 
-    public FileLink saveFileLink(FileLink fileLink){
+    public FileLink saveFileLink(FileLink fileLink) {
         final boolean USE_PASSWORD = Strings.isNotBlank(fileLink.getPassword());
         fileLink.setUser(this.authenticationService.getUserIfExist());
         fileLink.setIsExpired(false);
         fileLink.setUsePassword(USE_PASSWORD);
         fileLink.setFileLink(this.getRandomFileLink());
-        if(USE_PASSWORD) {
+        if (USE_PASSWORD) {
             fileLink.setPassword(this.pwdEncoder.encode(fileLink.getPassword()));
         }
         return this.repository.save(fileLink);
     }
 
-    public List<FileLink> getAllFileLinksByAccount(){
+    public List<FileLink> getAllFileLinksByAccount() {
         User user = this.authenticationService.getUserIfExist();
-        return user != null? this.repository.getFileLinksByUser(user): new ArrayList<>();
+        return user != null ? this.repository.getFileLinksByUser(user) : new ArrayList<>();
     }
 
-    public FileLink getFileLink(String fileLinkPath){
+    /**
+     * Récupère un FileLink à partir de son lien de partage court.
+     * Lève une NoSuchElementException si le lien est introuvable ou si le fichier est expiré.
+     *
+     * Note : la méthode isExpired() de FileLink retourne TRUE tant que la date d'expiration
+     * n'est PAS dépassée (c'est-à-dire que le fichier est encore valide). Elle retourne FALSE
+     * quand le fichier est effectivement expiré. On lève l'exception quand isExpired() == false.
+     */
+    public FileLink getFileLink(String fileLinkPath) {
+        FileLink fileLink = this.repository.findByFileLink(fileLinkPath)
+                .orElseThrow(() -> new NoSuchElementException("Lien introuvable : " + fileLinkPath));
 
-        return null;
+        if (!fileLink.isExpired()) {
+            throw new NoSuchElementException("Le lien a expiré : " + fileLinkPath);
+        }
+
+        return fileLink;
     }
 
     public String deleteFileLink(String fileLinkPath){
@@ -56,9 +71,20 @@ public class FileLinkService {
         return null;
     }
 
-    public boolean isPasswordCorrect(FileLink fileLink, String password){
-
-        return false;
+    /**
+     * Vérifie si le mot de passe fourni correspond à celui du FileLink.
+     * - Si le fichier n'est pas protégé (usePassword = false), retourne true directement.
+     * - Si le mot de passe est vide/null alors que le fichier est protégé, retourne false.
+     * - Sinon, délègue la comparaison au PasswordEncoder.
+     */
+    public boolean isPasswordCorrect(FileLink fileLink, String password) {
+        if (!fileLink.getUsePassword()) {
+            return true;
+        }
+        if (Strings.isBlank(password)) {
+            return false;
+        }
+        return this.pwdEncoder.matches(password, fileLink.getPassword());
     }
 
     private String getRandomFileLink() {
