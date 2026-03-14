@@ -37,8 +37,8 @@ public class FileLinkService {
     }
 
     public List<FileLink> getAllFileLinksByAccount(){
-
-        return null;
+        User user = this.authenticationService.getUserIfExist();
+        return user != null? this.repository.getFileLinksByUser(user): new ArrayList<>();
     }
 
     public FileLink getFileLink(String fileLinkPath){
