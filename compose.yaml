@@ -2,13 +2,15 @@ services:
   traefik:
     image: ${TRAEFIK_IMAGE}
     container_name: traefik
-    restart: always
+    restart: unless-stopped
     command:
-      - "--api.insecure=true"
+      - "--api.insecure=false"
+      - "--api.dashboard=false"
+      - "--log.level=INFO"
+      - "--accesslog=true"
       - "--providers.docker=true"
+      - "--providers.docker.network=app_network"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.swarmmode=false"
-      - "--providers.docker.watch=true"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--entrypoints.frontend.address=:4200"
       - "--entrypoints.backend.address=:8081"
@@ -20,21 +22,28 @@ services:
     networks:
       - app_network
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   frontend:
     build:
       context: ${FRONT_END_CONTEXT}
       dockerfile: Dockerfile
     container_name: datashare_frontend
-    restart: always
+    restart: unless-stopped
+    init: true
     volumes:
       - ${FRONT_END_CONTEXT}:/app
-      - /app/node_modules
+      - node_modules:/app/node_modules
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=app_network"
       - "traefik.http.routers.frontend.rule=Host(`localhost`)"
       - "traefik.http.routers.frontend.entrypoints=frontend"
+      - "traefik.http.middlewares.frontend-ratelimit.ratelimit.average=100"
+      - "traefik.http.middlewares.frontend-ratelimit.ratelimit.burst=200"
+      - "traefik.http.middlewares.frontend-inflight.inflightreq.amount=100"
+      - "traefik.http.middlewares.frontend-compress.compress=true"
+      - "traefik.http.routers.frontend.middlewares=frontend-ratelimit,frontend-inflight,frontend-compress"
     networks:
       - app_network
 
@@ -43,26 +52,34 @@ services:
       context: .
       dockerfile: ./Dockerfile
     container_name: datashare_backend
+    restart: unless-stopped
+    init: true
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=app_network"
       - "traefik.http.services.backend.loadbalancer.server.port=8081"
       - "traefik.http.routers.backend.rule=Host(`localhost`)"
       - "traefik.http.routers.backend.entrypoints=backend"
+      - "traefik.http.middlewares.backend-ratelimit.ratelimit.average=20"
+      - "traefik.http.middlewares.backend-ratelimit.ratelimit.burst=40"
+      - "traefik.http.middlewares.backend-inflight.inflightreq.amount=50"
+      - "traefik.http.routers.backend.middlewares=backend-ratelimit,backend-inflight"
     ports:
       - "5005:5005"
     networks:
       - app_network
+      - internal_network
     volumes:
-      - ./target:/app
+      - ./target:/app:delegated
       - ./uploads:${DATA_PATH}
     environment:
-      DB_USER: '${DB_USER}'
-      DB_PASSWORD: '${DB_PASSWORD}'
-      DB_HOST: '${DB_HOST}'
-      DB_PORT: '${DB_PORT}'
-      DB_NAME: '${DB_NAME}'
-      DATA_PATH: '${DATA_PATH}'
-      VAULT_ADDR: "http://vault:8200"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DATA_PATH: ${DATA_PATH}
+      VAULT_ADDR: "http://traefik:8200"
     depends_on:
       - db
       - vault
@@ -70,7 +87,7 @@ services:
   vault:
     image: ${VAULT_IMAGE}
     container_name: datashare_vault
-    restart: always
+    restart: unless-stopped
     environment:
       VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
       VAULT_DEV_ROOT_TOKEN_ID: "root"
@@ -79,6 +96,7 @@ services:
       - IPC_LOCK
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=app_network"
       - "traefik.http.routers.vault.rule=Host(`localhost`)"
       - "traefik.http.routers.vault.entrypoints=vault"
     networks:
@@ -97,11 +115,14 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - app_network
+      - internal_network
 
 networks:
   app_network:
     driver: bridge
+  internal_network:
+    internal: true
 
 volumes:
   db_data:
+  node_modules:
