@@ -5,10 +5,9 @@ Le projet se lance à l'aide d'un fichier docker-compose qui est programmé pour
 Une fois ce repository git clonée, il faut aussi télécharger celui du front-end puis en indiquer le chemin en remplissant la variable FRONT_END_CONTEXT du fichier .env
 
 # Lancement
-## Chargement de la clé JWT
-Il faut lancer l'environnement une première fois avec la commande "docker-compose up", une fois cela fait il faudra se rendre sur l'ui du vault et saisir le token "root".
-Puis il suffit d'ajouter la clé JWT dans le chemin "kv/datashare-backend" sous le nom de variable "JWT_SECRET".
-Finalement en relançant l'environnement à l'aide de "docker-compose up" le backend se mettra en route en ayant la connaissance de la clé JWT.
+Le projet (back-end + front-end) se lance avec docker compose up
+## Changement de la clé JWT
+Il est possible de modifier la clé JWT dans le chemin "secret/kv/datashare-backend" sous le nom de variable "JWT_SECRET".
 ## Debug back-end
 Le port 5005 est ouvert dans le back et configuré pour le debug JVM. Cela permet entre autre le hotswap et l'activation des points d'arrêts quand on communique dessus.
 
