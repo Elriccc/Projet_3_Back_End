@@ -75,6 +75,6 @@ public class FileLink {
     private LocalDateTime updated_at;
 
     public boolean isExpired(){
-        return this.expirationDate == null || !(this.expirationDate.isBefore(LocalDate.now()));
+        return this.expirationDate != null && this.expirationDate.isBefore(LocalDate.now());
     }
 }

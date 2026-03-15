@@ -16,5 +16,4 @@ public class FileDTO {
     private boolean usePassword;
     private int daysUntilExpired;
     private List<String> tags;
-    private MultipartFile file;
 }

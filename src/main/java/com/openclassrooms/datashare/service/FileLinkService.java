@@ -45,16 +45,12 @@ public class FileLinkService {
     /**
      * Récupère un FileLink à partir de son lien de partage court.
      * Lève une NoSuchElementException si le lien est introuvable ou si le fichier est expiré.
-     *
-     * Note : la méthode isExpired() de FileLink retourne TRUE tant que la date d'expiration
-     * n'est PAS dépassée (c'est-à-dire que le fichier est encore valide). Elle retourne FALSE
-     * quand le fichier est effectivement expiré. On lève l'exception quand isExpired() == false.
      */
     public FileLink getFileLink(String fileLinkPath) {
         FileLink fileLink = this.repository.findByFileLink(fileLinkPath)
                 .orElseThrow(() -> new NoSuchElementException("Lien introuvable : " + fileLinkPath));
 
-        if (!fileLink.isExpired()) {
+        if (fileLink.isExpired()) {
             throw new NoSuchElementException("Le lien a expiré : " + fileLinkPath);
         }
 
@@ -72,19 +68,16 @@ public class FileLinkService {
     }
 
     /**
-     * Vérifie si le mot de passe fourni correspond à celui du FileLink.
-     * - Si le fichier n'est pas protégé (usePassword = false), retourne true directement.
-     * - Si le mot de passe est vide/null alors que le fichier est protégé, retourne false.
+     * Vérifie si le mot de passe fourni ne correspond pas à celui du FileLink.
+     * - Si le fichier n'est pas protégé (usePassword = false), retourne false directement.
+     * - Si le mot de passe est vide/null alors que le fichier est protégé, retourne true.
      * - Sinon, délègue la comparaison au PasswordEncoder.
      */
-    public boolean isPasswordCorrect(FileLink fileLink, String password) {
+    public boolean isPasswordIncorrect(FileLink fileLink, String password) {
         if (!fileLink.getUsePassword()) {
-            return true;
-        }
-        if (Strings.isBlank(password)) {
             return false;
         }
-        return this.pwdEncoder.matches(password, fileLink.getPassword());
+        return Strings.isBlank(password) || !this.pwdEncoder.matches(password, fileLink.getPassword());
     }
 
     private String getRandomFileLink() {

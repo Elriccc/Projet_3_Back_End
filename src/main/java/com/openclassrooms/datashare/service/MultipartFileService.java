@@ -7,16 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 
-import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -28,8 +27,9 @@ public class MultipartFileService {
     @Value("${app.no-user-directory}")
     private String NO_USER_DIRECTORY;
 
-    public void addFile(FileLink fileLink, MultipartFile multipartFile) throws IOException {
-        File file = this.buildFilePath(fileLink, multipartFile);
+    public void addFile(FileLink fileLink, MultipartFile multipartFile) {
+        log.info(multipartFile.getContentType());
+        File file = this.buildFilePath(fileLink);
         File parent = file.getParentFile();
         parent.mkdir();
         try {
@@ -38,7 +38,8 @@ public class MultipartFileService {
             outputStream.write(multipartFile.getBytes());
             outputStream.close();
         } catch (IOException e) {
-            throw new IOException();
+            throw new NoSuchElementException(
+                    "Impossible de lire le fichier : " + file.getAbsolutePath());
         }
     }
 
@@ -47,25 +48,14 @@ public class MultipartFileService {
      * Reconstruit le chemin en utilisant l'extension stockée dans l'entité FileLink.
      * Lève une NoSuchElementException si le fichier est introuvable sur le disque.
      */
-    public MultipartFile getFile(FileLink fileLink) {
+    public InputStreamResource getFileStream(FileLink fileLink) {
         File file = this.buildFilePath(fileLink);
-
         if (!file.exists()) {
             throw new NoSuchElementException(
                     "Fichier physique introuvable sur le disque : " + file.getAbsolutePath());
         }
-
         try {
-            byte[] content = Files.readAllBytes(file.toPath());
-            String filename = fileLink.getName() + "." + fileLink.getExtension();
-            String contentType = Files.probeContentType(file.toPath());
-
-            return new MockMultipartFile(
-                    "file",
-                    filename,
-                    contentType != null ? contentType : "application/octet-stream",
-                    content
-            );
+            return new InputStreamResource(new FileInputStream(file));
         } catch (IOException e) {
             throw new NoSuchElementException(
                     "Impossible de lire le fichier : " + file.getAbsolutePath());
@@ -75,24 +65,6 @@ public class MultipartFileService {
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
-
-    /**
-     * Construit le chemin du fichier lors de l'upload (le nom original du MultipartFile est utilisé
-     * pour récupérer l'extension).
-     */
-    private @NonNull File buildFilePath(FileLink fileLink, MultipartFile multipartFile) {
-        Objects.requireNonNull(multipartFile.getOriginalFilename());
-        String filePath = this.DATA_PATH;
-        if (fileLink.getUser() == null) {
-            filePath = filePath.concat(NO_USER_DIRECTORY);
-        } else {
-            filePath = filePath.concat(fileLink.getUser().getId());
-        }
-        filePath = filePath.concat(fileLink.getId());
-        filePath = filePath.concat(multipartFile.getOriginalFilename()
-                .substring(multipartFile.getOriginalFilename().lastIndexOf(".")));
-        return new File(filePath);
-    }
 
     /**
      * Construit le chemin du fichier lors du téléchargement (l'extension est lue depuis l'entité

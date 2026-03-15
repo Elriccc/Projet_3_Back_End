@@ -16,14 +16,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "FileLinkController", description = "Endpoints permettant d'opérer sur les fichiers")
@@ -57,11 +56,7 @@ public class FileController {
     @PostMapping("/api/files")
     public ResponseEntity<?> addFile(@Validated @ModelAttribute FileUploadDTO fileUploadDTO){
         FileLink fileLink = this.service.saveFileLink(this.mapper.toEntity(fileUploadDTO));
-        try {
-            this.fileService.addFile(fileLink, fileUploadDTO.getFile());
-        } catch(IOException e){
-            //
-        }
+        this.fileService.addFile(fileLink, fileUploadDTO.getFile());
         return new ResponseEntity<>(this.mapper.toDTO(fileLink), HttpStatus.CREATED);
     }
 
@@ -101,35 +96,51 @@ public class FileController {
         return ResponseEntity.ok(DTOs);
     }
 
-    @Operation(method = "downloadFiles", summary = "Télécharger un fichier", description = "Télécharger un fichier et récupérer ses mêta-données")
+    @Operation(method = "retrieveFileByLink", summary = "Récupérer un fichier selon son lien", description = "Récupérer les informations d'un fichier à partir de son lien")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fichier correctement téléchargé", content = {
+        @ApiResponse(responseCode = "200", description = "Fichier récupéré", content = {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE
                 , schema = @Schema(implementation = FileDTO.class)
                 , examples = @ExampleObject(value =
-                    "{" +
-                        "fileLink: 'lG4Eh', " +
-                        "name: 'myAwesomeImage', " +
-                        "extension: 'png', " +
-                        "size: 15000, " +
-                        "daysUntilExpired: 1, " +
-                        "tags: ['awesome', 'image'], " +
-                        "usePassword: false" +
-                    "}"
+                "{" +
+                    "fileLink: 'lG4Ef', " +
+                    "name: 'myAwesomeDatas', " +
+                    "extension: 'zip', " +
+                    "size: 180000, " +
+                    "daysUntilExpired: 3, " +
+                    "tags: ['new', 'awesome', 'zip'], " +
+                    "usePassword: true" +
+                "}"
                 )
             )
         }),
+    })
+    @GetMapping("/api/files/{fileLinkPath}")
+    public ResponseEntity<?> retrieveFileByLink(@PathVariable String fileLinkPath){
+        FileLink fileLink = this.service.getFileLink(fileLinkPath);
+        FileDTO dto = this.mapper.toDTO(fileLink);
+        return ResponseEntity.ok(dto);
+    }
+
+    @Operation(method = "downloadFiles", summary = "Télécharger un fichier", description = "Télécharger un fichier")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Fichier correctement téléchargé"),
         @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
     @PostMapping("/api/files/download/{fileLinkPath}")
-    public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody @FilePassword String password){
+    public ResponseEntity<?> downloadFile(@PathVariable String fileLinkPath, @RequestBody(required = false) @FilePassword String password){
         FileLink fileLink = this.service.getFileLink(fileLinkPath);
-        FileDTO dto = this.mapper.toDTO(fileLink);
-        if(this.service.isPasswordCorrect(fileLink, password)) {
-            MultipartFile file = this.fileService.getFile(fileLink);
-            dto.setFile(file);
+        if(this.service.isPasswordIncorrect(fileLink, password)) {
+            return ResponseEntity.badRequest().body("Le mot de passe est incorrect");
         }
-        return ResponseEntity.ok(dto);
+        InputStreamResource resource = this.fileService.getFileStream(fileLink);
+
+        String contentType = "application/octet-stream";
+        String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                .body(resource);
     }
 
     @Operation(method = "deleteFile", summary = "Supprimer un fichier", description = "Supprimer un fichier et ses mêta-données")

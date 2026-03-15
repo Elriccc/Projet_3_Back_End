@@ -57,7 +57,6 @@ public interface FileDtoMapper {
         return fileUploadDTO.getExpirationTime() > 0 && fileUploadDTO.getExpirationTime() < 7? LocalDate.now().plusDays(fileUploadDTO.getExpirationTime()) : null;
     }
 
-    @Mapping(target = "file", ignore = true)
     @Mapping(target = "daysUntilExpired", expression = "java(mapDaysUntilExpired(fileLink))")
     FileDTO toDTO(FileLink fileLink);
 
