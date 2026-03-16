@@ -70,14 +70,25 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Gère les cas "ressource introuvable" : lien inexistant ou expiré.
-     * Retourne un HTTP 404.
+     * Gère les cas "ressource introuvable" : lien inexistant.
+     * Retourne un statut 404.
      */
     @ExceptionHandler(NoSuchElementException.class)
     protected ResponseEntity<Object> handleNoSuchElementException(
             NoSuchElementException noSuchElementException) {
         log.warn("Resource not found: {}", noSuchElementException.getMessage());
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Gère les cas où un lien a expiré mais existe toujours dans l'état "expiré"
+     * Retourne un statut 410
+     */
+    @ExceptionHandler(ExpiredLinkException.class)
+    protected ResponseEntity<Object> handleExpiredLinkException(
+            ExpiredLinkException expiredLinkException) {
+        log.warn("Link is expired: {}", expiredLinkException.getMessage());
+        return new ResponseEntity<>(HttpStatus.GONE);
     }
 
     @ExceptionHandler(value = {Exception.class})

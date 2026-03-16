@@ -3,6 +3,7 @@ package com.openclassrooms.datashare.service;
 import com.openclassrooms.datashare.configuration.security.AuthenticationService;
 import com.openclassrooms.datashare.entities.FileLink;
 import com.openclassrooms.datashare.entities.User;
+import com.openclassrooms.datashare.handler.ExpiredLinkException;
 import com.openclassrooms.datashare.repository.FileLinkRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +52,7 @@ public class FileLinkService {
                 .orElseThrow(() -> new NoSuchElementException("Lien introuvable : " + fileLinkPath));
 
         if (fileLink.isExpired()) {
-            throw new NoSuchElementException("Le lien a expiré : " + fileLinkPath);
+            throw new ExpiredLinkException("Le lien a expiré : " + fileLinkPath);
         }
 
         return fileLink;
