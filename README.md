@@ -10,6 +10,8 @@ Le projet (back-end + front-end) se lance avec docker compose up
 Il est possible de modifier la clé JWT dans le chemin "secret/kv/datashare-backend" sous le nom de variable "JWT_SECRET".
 ## Debug back-end
 Le port 5005 est ouvert dans le back et configuré pour le debug JVM. Cela permet entre autre le hotswap et l'activation des points d'arrêts quand on communique dessus.
+## Rebuild du back-end
+Si un changement fait sauter le hotswap, il faut lancer la commande 'mvn package' avant de relancer le container.
 
 # Utilisation
 Les ports 4200, 8200 et 8081 du reverse proxy sont exposés à l'adresse localhost.
