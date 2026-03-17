@@ -4,7 +4,6 @@ import ch.qos.logback.core.util.StringUtil;
 import com.openclassrooms.datashare.dto.FileDTO;
 import com.openclassrooms.datashare.dto.FileUploadDTO;
 import com.openclassrooms.datashare.entities.FileLink;
-import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -54,7 +53,7 @@ public interface FileDtoMapper {
     }
 
     default LocalDate mapExpirationDate(FileUploadDTO fileUploadDTO){
-        return fileUploadDTO.getExpirationTime() > 0 && fileUploadDTO.getExpirationTime() < 7? LocalDate.now().plusDays(fileUploadDTO.getExpirationTime()) : null;
+        return fileUploadDTO.getExpirationTime() > 0 ? LocalDate.now().plusDays(fileUploadDTO.getExpirationTime()) : null;
     }
 
     @Mapping(target = "daysUntilExpired", expression = "java(mapDaysUntilExpired(fileLink))")
