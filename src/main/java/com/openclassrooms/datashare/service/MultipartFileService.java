@@ -62,9 +62,10 @@ public class MultipartFileService {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
+    public void deleteFile(String filePath){
+        File file = new File(this.DATA_PATH + "/" + filePath);
+        file.delete();
+    }
 
     /**
      * Construit le chemin du fichier lors du téléchargement (l'extension est lue depuis l'entité
@@ -75,7 +76,7 @@ public class MultipartFileService {
         if (fileLink.getUser() == null) {
             filePath = filePath.concat(NO_USER_DIRECTORY);
         } else {
-            filePath = filePath.concat(fileLink.getUser().getId());
+            filePath = filePath.concat("/").concat(fileLink.getUser().getId()).concat("/");
         }
         filePath = filePath.concat(fileLink.getId());
         filePath = filePath.concat("." + fileLink.getExtension());

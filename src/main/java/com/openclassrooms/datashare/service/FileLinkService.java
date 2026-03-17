@@ -59,14 +59,18 @@ public class FileLinkService {
         return fileLink;
     }
 
-    public String deleteFileLink(String fileLinkPath){
-
-        return null;
+    public String deleteFileLink(String authHeader, String fileLinkPath){
+        FileLink fileLink = this.getFileLinkIfAuthorized(authHeader, fileLinkPath);
+        String filePath = fileLink.getUser().getId().concat("/").concat(fileLink.getId()).concat(".").concat(fileLink.getExtension());
+        this.repository.delete(fileLink);
+        return filePath;
     }
 
-    public FileLink updateFileLinkTags(String fileLinkPath, List<String> tags){
-
-        return null;
+    public FileLink updateFileLinkTags(String authHeader, String fileLinkPath, List<String> tags){
+        FileLink fileLink = this.getFileLinkIfAuthorized(authHeader, fileLinkPath);
+        fileLink.setTags(tags);
+        this.repository.save(fileLink);
+        return fileLink;
     }
 
     /**
@@ -91,5 +95,15 @@ public class FileLinkService {
                 .mapToObj(CHRS::charAt)
                 .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
                 .toString();
+    }
+
+    private FileLink getFileLinkIfAuthorized(String authHeader, String fileLinkPath){
+        User user = this.authenticationService.getUserIfExist(authHeader);
+        FileLink fileLink = this.repository.findByFileLink(fileLinkPath)
+                .orElseThrow(() -> new NoSuchElementException("Lien introuvable : " + fileLinkPath));
+        if(user == null || !user.equals(fileLink.getUser())){
+            throw new BadCredentialsException("Vous n'avez pas le droit de modifier un fichier que vous n'avez pas crée");
+        }
+        return fileLink;
     }
 }
