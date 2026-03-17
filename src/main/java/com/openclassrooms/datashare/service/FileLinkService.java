@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,9 @@ public class FileLinkService {
     private final PasswordEncoder pwdEncoder;
     private final AuthenticationService authenticationService;
 
-    public FileLink saveFileLink(FileLink fileLink) {
+    public FileLink saveFileLink(String authHeader, FileLink fileLink) {
         final boolean USE_PASSWORD = Strings.isNotBlank(fileLink.getPassword());
-        fileLink.setUser(this.authenticationService.getUserIfExist());
+        fileLink.setUser(this.authenticationService.getUserIfExist(authHeader));
         fileLink.setIsExpired(false);
         fileLink.setUsePassword(USE_PASSWORD);
         fileLink.setFileLink(this.getRandomFileLink());
@@ -38,8 +39,8 @@ public class FileLinkService {
         return this.repository.save(fileLink);
     }
 
-    public List<FileLink> getAllFileLinksByAccount() {
-        User user = this.authenticationService.getUserIfExist();
+    public List<FileLink> getAllFileLinksByAccount(String authHeader) {
+        User user = this.authenticationService.getUserIfExist(authHeader);
         return user != null ? this.repository.getFileLinksByUser(user) : new ArrayList<>();
     }
 

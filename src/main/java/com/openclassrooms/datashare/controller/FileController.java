@@ -54,8 +54,9 @@ public class FileController {
         @ApiResponse(responseCode = "400", description = "Requête incorrecte")
     })
     @PostMapping("/api/files")
-    public ResponseEntity<?> addFile(@Validated @ModelAttribute FileUploadDTO fileUploadDTO){
-        FileLink fileLink = this.service.saveFileLink(this.mapper.toEntity(fileUploadDTO));
+    public ResponseEntity<?> addFile(@RequestHeader(name=HttpHeaders.AUTHORIZATION, required=false) String tokenHeader
+            , @Validated @ModelAttribute FileUploadDTO fileUploadDTO){
+        FileLink fileLink = this.service.saveFileLink(tokenHeader, this.mapper.toEntity(fileUploadDTO));
         this.fileService.addFile(fileLink, fileUploadDTO.getFile());
         return new ResponseEntity<>(this.mapper.toDTO(fileLink), HttpStatus.CREATED);
     }
@@ -91,8 +92,8 @@ public class FileController {
         }),
     })
     @GetMapping("/api/files")
-    public ResponseEntity<?> retrieveAllFiles(){
-        List<FileDTO> DTOs = this.service.getAllFileLinksByAccount().stream().map(this.mapper::toDTO).toList();
+    public ResponseEntity<?> retrieveAllFiles(@RequestHeader(name=HttpHeaders.AUTHORIZATION, required=false) String tokenHeader){
+        List<FileDTO> DTOs = this.service.getAllFileLinksByAccount(tokenHeader).stream().map(this.mapper::toDTO).toList();
         return ResponseEntity.ok(DTOs);
     }
 
@@ -145,16 +146,14 @@ public class FileController {
 
     @Operation(method = "deleteFile", summary = "Supprimer un fichier", description = "Supprimer un fichier et ses mêta-données")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fichier correctement supprimé", content = {
-            @Content(mediaType = MediaType.TEXT_PLAIN_VALUE
-                    , schema = @Schema(implementation = String.class)
-                    , examples = @ExampleObject(value = "lG4Ef88e8CEv8gZ0"))
-        }),
+        @ApiResponse(responseCode = "200", description = "Fichier correctement supprimé")
     })
     @DeleteMapping("/api/files/{fileLinkPath}")
-    public ResponseEntity<?> deleteFile(@PathVariable String fileLinkPath){
-        String dbFileId = this.service.deleteFileLink(fileLinkPath);
-        return ResponseEntity.ok(dbFileId);
+    public ResponseEntity<?> deleteFile(@RequestHeader(name=HttpHeaders.AUTHORIZATION, required=false) String tokenHeader,
+                                        @PathVariable String fileLinkPath){
+        String filePath = this.service.deleteFileLink(tokenHeader, fileLinkPath);
+        this.fileService.deleteFile(filePath);
+        return ResponseEntity.ok("");
     }
 
     @Operation(method = "updateTags", summary = "Mettre à jour les tags d'un fichier", description = "Mettre à jour les tags d'un fichier et récupérer ses mêta-données")
@@ -178,8 +177,9 @@ public class FileController {
         )
     })
     @PutMapping("/api/files/{fileLinkPath}")
-    public ResponseEntity<?> updateTags(@PathVariable String fileLinkPath, @RequestBody List<String> tags){
-        FileLink fileLink = this.service.updateFileLinkTags(fileLinkPath, tags);
+    public ResponseEntity<?> updateTags(@RequestHeader(name=HttpHeaders.AUTHORIZATION, required=false) String tokenHeader,
+                                        @PathVariable String fileLinkPath, @RequestBody List<String> tags){
+        FileLink fileLink = this.service.updateFileLinkTags(tokenHeader, fileLinkPath, tags);
         return ResponseEntity.ok(this.mapper.toDTO(fileLink));
     }
 }

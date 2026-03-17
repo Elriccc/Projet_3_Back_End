@@ -50,13 +50,14 @@ public class CustomJwtService {
 
     public boolean isTokenExpired(String token) {
         try {
-            return this.extractAllClaims(token).getExpiration().before(new Date());
-        } catch (ExpiredJwtException exception){
+            Date jwtExpiration = this.extractAllClaims(token).getExpiration();
+            return jwtExpiration == null || jwtExpiration.before(new Date());
+        } catch (ExpiredJwtException | MalformedJwtException exception){
             return true;
         }
     }
 
-    private Claims extractAllClaims(String token) throws ExpiredJwtException{
+    private Claims extractAllClaims(String token) throws ExpiredJwtException, MalformedJwtException{
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
