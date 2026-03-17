@@ -62,6 +62,9 @@ public class MultipartFileService {
         }
     }
 
+    /**
+     * Récupère un fichier appartenant à un utilisateur à partir de son chemin et le supprime
+     */
     public void deleteFile(String filePath){
         File file = new File(this.DATA_PATH + "/" + filePath);
         file.delete();

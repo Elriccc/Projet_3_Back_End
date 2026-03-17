@@ -24,17 +24,26 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final CustomJwtService jwtService;
 
+    /**
+     * Créer un nouveau compte en base
+     */
     public void register(User user) {
         log.info("Registering new user");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
     }
 
+    /**
+     * Créer la connection d'un utilisateur et renvoie le token qui lui a été généré
+     */
     public String login(String login, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
         return jwtService.generateToken(userDetailService.loadUserByUsername(login));
     }
 
+    /**
+     * Renvoie la validation qu'un token existe et n'a pas expiré
+     */
     public boolean validateToken(@NotBlank String token){
         return !jwtService.isTokenExpired(token);
     }

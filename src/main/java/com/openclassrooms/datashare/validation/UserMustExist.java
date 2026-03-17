@@ -5,6 +5,9 @@ import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
+/**
+ * Vérifie que la combinaison login/mot de passe correspond bien à un utilisateur de la base
+ */
 @Documented
 @Constraint(validatedBy = UserMustExistValidator.class)
 @Target({ElementType.TYPE})

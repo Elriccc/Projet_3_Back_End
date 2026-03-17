@@ -59,6 +59,9 @@ public interface FileDtoMapper {
     @Mapping(target = "daysUntilExpired", expression = "java(mapDaysUntilExpired(fileLink))")
     FileDTO toDTO(FileLink fileLink);
 
+    /**
+     * Renvoie le nombre de jours avant la date d'expiration d'un fichier, s'il est déjà expiré renvoie 0
+     */
     default int mapDaysUntilExpired(FileLink fileLink){
         if(fileLink.getExpirationDate() != null && fileLink.getExpirationDate().isAfter(LocalDate.now())) {
             return (int) ChronoUnit.DAYS.between(LocalDate.now(), fileLink.getExpirationDate());

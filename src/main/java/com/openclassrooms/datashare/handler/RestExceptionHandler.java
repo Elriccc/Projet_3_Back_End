@@ -25,6 +25,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
+    /**
+     * Gère les cas où un utilisateur envoi une requête qui n'est pas correcte.
+     * La liste des raisons rendant cette requête incohérente sera présente dans la réponse
+     * Retourne un statut 400
+     */
     @Override
     public @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -55,6 +60,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    /**
+     * Gère les cas où un utilisateur n'est pas connecté et doit l'être pour accéder à la ressource
+     * Retourne un statut 401
+     */
     @ExceptionHandler(BadCredentialsException.class)
     protected ResponseEntity<Object> handleBadCredentialsException(
             BadCredentialsException badCredentialsException) {
@@ -62,6 +71,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * Gère les cas où un utilisateur essaye d'accéder à une ressource qui lui est inaccessible
+     * Retourne un statut 403
+     */
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<Object> handleForbiddenException(
             AccessDeniedException accessDeniedException) {
@@ -70,7 +83,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Gère les cas "ressource introuvable" : lien inexistant.
+     * Gère les cas "ressource introuvable" : lien inexistant
      * Retourne un statut 404.
      */
     @ExceptionHandler(NoSuchElementException.class)
@@ -91,6 +104,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(HttpStatus.GONE);
     }
 
+    /**
+     * Est appelée dans le cas où une erreur n'est pas gérée
+     * Retourne un statut 500.
+     */
     @ExceptionHandler(value = {Exception.class})
     protected ResponseEntity<Object> handleException(Exception exception) {
         log.warn("Unhandled error: {}", exception.getMessage());
