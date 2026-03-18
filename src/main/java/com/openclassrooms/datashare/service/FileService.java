@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -68,6 +69,15 @@ public class FileService {
     public void deleteFile(String filePath){
         File file = new File(this.DATA_PATH + "/" + filePath);
         file.delete();
+    }
+
+    /**
+     * Récupère une liste de FileLink et supprime les fichiers qui leurs sont associés
+     */
+    public void deleteFileFromJob(List<FileLink> fileLinks){
+        for(FileLink fileLink: fileLinks) {
+            this.buildFilePath(fileLink).delete();
+        }
     }
 
     /**
