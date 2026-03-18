@@ -5,7 +5,7 @@ import com.openclassrooms.datashare.dto.FileUploadDTO;
 import com.openclassrooms.datashare.entities.FileLink;
 import com.openclassrooms.datashare.mapper.FileDtoMapper;
 import com.openclassrooms.datashare.service.FileLinkService;
-import com.openclassrooms.datashare.service.MultipartFileService;
+import com.openclassrooms.datashare.service.FileService;
 import com.openclassrooms.datashare.validation.FilePassword;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileController {
     private final FileLinkService service;
-    private final MultipartFileService fileService;
+    private final FileService fileService;
     private final FileDtoMapper mapper;
 
     @Operation(method = "addFiles", summary = "Ajouter un fichier", description = "Ajouter un fichier avec un temps d'expiration et optionnellement un mot de passe")

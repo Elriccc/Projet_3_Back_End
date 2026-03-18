@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MultipartFileService {
+public class FileService {
     @Value("${app.data-path}")
     private String DATA_PATH;
     @Value("${app.no-user-directory}")
