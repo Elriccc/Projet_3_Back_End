@@ -39,6 +39,7 @@
 		<testcontainerscore.version>2.0.3</testcontainerscore.version>
 		<testcontainers.version>1.21.4</testcontainers.version>
 		<springdocopenapi.version>3.0.1</springdocopenapi.version>
+		<jacoco.version>0.8.14</jacoco.version>
 
 		<mavenplugin.version>3.2.5</mavenplugin.version>
 	</properties>
@@ -189,6 +190,12 @@
 			<version>${springdocopenapi.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>${jacoco.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
 	</dependencies>
 
@@ -268,6 +275,36 @@
 						<include>**/*IT.java</include>
 					</includes>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.14</version>
+				<configuration>
+					<excludes>
+						<exclude>com/openclassrooms/datashare/entities/*</exclude>
+						<exclude>com/openclassrooms/datashare/dto/*</exclude>
+						<exclude>com/openclassrooms/datashare/mapper/*</exclude>
+						<exclude>com/openclassrooms/datashare/handler/*</exclude>
+						<exclude>com/openclassrooms/datashare/DatashareBackendApplication.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- attached to Maven test phase -->
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

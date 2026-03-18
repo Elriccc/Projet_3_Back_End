@@ -43,7 +43,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(error -> new FieldValidationError(
                         error.getField(),
                         error.getDefaultMessage(),
-                        error.getRejectedValue()
+                        error.getRejectedValue() == null? null : error.getRejectedValue().toString()
                 ))
                 .collect(Collectors.toList());
 

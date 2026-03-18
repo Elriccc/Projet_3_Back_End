@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class FieldValidationError {
     private String field;
     private String message;
-    private Object rejectedValue;
+    private String rejectedValue;
 }
