@@ -31,6 +31,7 @@ public class FileLinkService {
      * Sauvegarde un fichier en base
      */
     public FileLink saveFileLink(String authHeader, FileLink fileLink) {
+        log.info("Création d'un nouveau lien fichier");
         final boolean USE_PASSWORD = Strings.isNotBlank(fileLink.getPassword());
         fileLink.setUser(this.authenticationService.getUserIfExist(authHeader));
         fileLink.setIsExpired(false);
@@ -39,7 +40,9 @@ public class FileLinkService {
         if (USE_PASSWORD) {
             fileLink.setPassword(this.pwdEncoder.encode(fileLink.getPassword()));
         }
-        return this.repository.save(fileLink);
+        FileLink fileLinkDb = this.repository.save(fileLink);
+        log.info("Le lien fichier ".concat(fileLink.getId()).concat(" a été crée avec succès"));
+        return fileLinkDb;
     }
 
     /**
@@ -71,6 +74,7 @@ public class FileLinkService {
      */
     public String deleteFileLink(String authHeader, String fileLinkPath){
         FileLink fileLink = this.getFileLinkIfAuthorized(authHeader, fileLinkPath);
+        log.info("Suppression du lien fichier ".concat(fileLink.getId()));
         String filePath = fileLink.getUser().getId().concat("/").concat(fileLink.getId()).concat(".").concat(fileLink.getExtension());
         this.repository.delete(fileLink);
         return filePath;
@@ -81,6 +85,7 @@ public class FileLinkService {
      */
     public FileLink updateFileLinkTags(String authHeader, String fileLinkPath, List<String> tags){
         FileLink fileLink = this.getFileLinkIfAuthorized(authHeader, fileLinkPath);
+        log.info("Mise à jour des tags sur le lien fichier ".concat(fileLink.getId()));
         fileLink.setTags(tags);
         this.repository.save(fileLink);
         return fileLink;

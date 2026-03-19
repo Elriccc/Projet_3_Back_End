@@ -29,8 +29,8 @@ public class FileService {
     private String NO_USER_DIRECTORY;
 
     public void addFile(FileLink fileLink, MultipartFile multipartFile) {
-        log.info(multipartFile.getContentType());
         File file = this.buildFilePath(fileLink);
+        log.info("Création du fichier ".concat(file.getName()));
         File parent = file.getParentFile();
         parent.mkdir();
         try {
@@ -38,7 +38,9 @@ public class FileService {
             FileOutputStream outputStream = new FileOutputStream(file);
             outputStream.write(multipartFile.getBytes());
             outputStream.close();
+            log.info("Fichier ajouté au volume avec succès");
         } catch (IOException e) {
+            log.error("Erreur lors de la création du fichier ".concat(file.getName()));
             throw new NoSuchElementException(
                     "Impossible de lire le fichier : " + file.getAbsolutePath());
         }
@@ -68,6 +70,7 @@ public class FileService {
      */
     public void deleteFile(String filePath){
         File file = new File(this.DATA_PATH + "/" + filePath);
+        log.info("Suppression du fichier ".concat(file.getName()));
         file.delete();
     }
 

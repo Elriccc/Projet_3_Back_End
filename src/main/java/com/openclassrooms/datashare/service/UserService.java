@@ -28,9 +28,10 @@ public class UserService {
      * Créer un nouveau compte en base
      */
     public void register(User user) {
-        log.info("Registering new user");
+        log.info("Enregistrement d'un nouvel utilisateur");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        repository.save(user);
+        User userDb = repository.save(user);
+        log.info("Enregistrement de l'utilisateur ".concat(userDb.getId()).concat( " avec succès"));
     }
 
     /**
