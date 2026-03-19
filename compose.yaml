@@ -81,9 +81,18 @@ services:
       DATA_PATH: ${DATA_PATH}
       VAULT_ADDR: "http://vault:8200"
     depends_on:
-      - db
-      - vault
-      - vault-init
+      db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+      vault-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   vault:
     image: ${VAULT_IMAGE}
@@ -102,12 +111,19 @@ services:
       - "traefik.http.routers.vault.entrypoints=vault"
     networks:
       - app_network
+    healthcheck:
+      test: [ "CMD-SHELL", "VAULT_ADDR=http://127.0.0.1:8200 vault status; [ $? -eq 0 ] || [ $? -eq 2 ]" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   vault-init:
     image: ${VAULT_IMAGE}
     container_name: datashare_vault_init
     depends_on:
-      - vault
+      vault:
+        condition: service_healthy
     networks:
       - app_network
     environment:
@@ -132,6 +148,33 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - internal_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  db_e2e:
+    image: ${POSTGRES_IMAGE}
+    container_name: datashare_db_e2e
+    profiles: [ "e2e" ]
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    networks:
+      - internal_network
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 networks:
   app_network:
