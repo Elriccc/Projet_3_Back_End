@@ -1,17 +1,20 @@
 # Installation
 ## Environnement
-Le projet se lance à l'aide d'un fichier docker-compose qui est programmé pour un environnement de dev. Celui-ci comporte un container pour le back-end, la bdd, le vault, le front-end et le reverse-proxy.
+Le projet se lance à l'aide d'un fichier `docker-compose` qui est programmé pour un environnement de dev.  
+Celui-ci comporte un container pour le back-end, la bdd, le vault, le front-end, le reverse-proxy, la bdd de test et un script pour remplir la clé JWT dans le Vault si elle est vide.
 ## Configuration git
-Une fois ce repository git clonée, il faut aussi télécharger celui du front-end puis en indiquer le chemin en remplissant la variable FRONT_END_CONTEXT du fichier .env
+Une fois ce repository git clonée, il faut aussi télécharger celui du front-end.
+Pour que celui-ci soit reconnu il faut l'indiquer dans la variable `FRONT_END_CONTEXT` du fichier `.env`
 
 # Lancement
 Le projet (back-end + front-end) se lance avec docker compose up
 ## Changement de la clé JWT
-Il est possible de modifier la clé JWT dans le chemin "secret/kv/datashare-backend" sous le nom de variable "JWT_SECRET".
+Il est possible de modifier la clé JWT dans le chemin `secret/kv/datashare-backend` sous le nom de variable `JWT_SECRET`.
 ## Debug back-end
-Le port 5005 est ouvert dans le back et configuré pour le debug JVM. Cela permet entre autre le hotswap et l'activation des points d'arrêts quand on communique dessus.
+Le port 5005 est ouvert dans le back et configuré pour le debug JVM.  
+Cela permet le hotswap et l'activation des points d'arrêts.
 ## Rebuild du back-end
-Si un changement fait sauter le hotswap, il faut lancer la commande 'mvn package' avant de relancer le container.
+Si un changement fait sauter le hotswap, il faut lancer la commande `mvn package` avant de relancer le container.
 
 # Utilisation
 Les ports 4200, 8200 et 8081 du reverse proxy sont exposés à l'adresse localhost.
