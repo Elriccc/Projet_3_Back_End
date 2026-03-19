@@ -251,7 +251,9 @@
 					<systemPropertyVariables>
 						<spring.profiles.active>test</spring.profiles.active>
 					</systemPropertyVariables>
+					<!--suppress UnresolvedMavenProperty -->
 					<argLine>
+						${argLine}
 						-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 						-Xshare:off
 					</argLine>
@@ -282,11 +284,14 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.14</version>
 				<configuration>
+					<outputDirectory>${project.build.directory}/coverage</outputDirectory>
 					<excludes>
+						<exclude>com/openclassrooms/datashare/configuration/*</exclude>
 						<exclude>com/openclassrooms/datashare/entities/*</exclude>
 						<exclude>com/openclassrooms/datashare/dto/*</exclude>
 						<exclude>com/openclassrooms/datashare/mapper/*</exclude>
 						<exclude>com/openclassrooms/datashare/handler/*</exclude>
+						<exclude>com/openclassrooms/datashare/schedulingtasks/*</exclude>
 						<exclude>com/openclassrooms/datashare/DatashareBackendApplication.class</exclude>
 					</excludes>
 				</configuration>
