@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class FileLinkService {
     private final PasswordEncoder pwdEncoder;
     private final AuthenticationService authenticationService;
 
+    @Value("${app.file-link-length}")
+    private String FILE_LINK_LENGTH;
+
     /**
      * Sauvegarde un fichier en base
      */
@@ -41,7 +45,7 @@ public class FileLinkService {
             fileLink.setPassword(this.pwdEncoder.encode(fileLink.getPassword()));
         }
         FileLink fileLinkDb = this.repository.save(fileLink);
-        log.info("Le lien fichier ".concat(fileLink.getId()).concat(" a été crée avec succès"));
+        log.info("Le lien fichier ".concat(fileLinkDb.getId()).concat(" a été crée avec succès"));
         return fileLinkDb;
     }
 
@@ -108,11 +112,10 @@ public class FileLinkService {
      * Renvoie un lien aléatoire sécurisé de 5 caractères alphanumériques
      */
     private String getRandomFileLink() {
-        final int LINK_LENGTH = 5;
         final String CHRS = "0123456789abcdefghijklmnopqrstuvwxyz-_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-        return SECURE_RANDOM.ints(LINK_LENGTH, 0, CHRS.length())
+        return SECURE_RANDOM.ints(Integer.parseInt(FILE_LINK_LENGTH), 0, CHRS.length())
                 .mapToObj(CHRS::charAt)
                 .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
                 .toString();

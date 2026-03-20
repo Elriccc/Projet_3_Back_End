@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,6 +35,11 @@ public class FileLinkServiceTest {
     @Mock private AuthenticationService authenticationService;
 
     @InjectMocks private FileLinkService service;
+
+    @BeforeEach
+    void startUp(){
+        ReflectionTestUtils.setField(service, "FILE_LINK_LENGTH", "5");
+    }
 
     @Nested
     @DisplayName("Téléverser un fichier")
@@ -301,6 +307,7 @@ public class FileLinkServiceTest {
 
     private FileLink buildFileLink(String password, boolean usePassword) {
         FileLink fl = new FileLink();
+        fl.setId("test");
         fl.setName("file");
         fl.setExtension("txt");
         fl.setSize(100L);

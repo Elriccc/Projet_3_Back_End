@@ -4,8 +4,6 @@ import com.openclassrooms.datashare.configuration.security.CustomJwtService;
 import com.openclassrooms.datashare.configuration.security.CustomUserDetailService;
 import com.openclassrooms.datashare.entities.User;
 import com.openclassrooms.datashare.repository.UserRepository;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,13 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,9 +53,11 @@ public class UserServiceTest {
         public void test_create_user() {
             // GIVEN
             User user = new User();
+            user.setId("test");
             user.setLogin(LOGIN);
             user.setPassword(PASSWORD);
             when(passwordEncoder.encode(PASSWORD)).thenReturn(PASSWORD);
+            when(repository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // WHEN
             service.register(user);

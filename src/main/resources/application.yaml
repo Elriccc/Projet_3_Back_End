@@ -33,6 +33,7 @@ server:
 app:
   data-path: ${DATA_PATH}
   no-user-directory: "/anonymous/"
+  file-link-length: 5
 
 jwt:
   secret: ${JWT_SECRET}
