@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -24,7 +24,7 @@ public class ScheduledTasks {
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteExpiredFiles() {
         log.info("File expiration is running");
-        List<FileLink> fileLinks = this.repository.findByExpirationDateBefore(new Date());
+        List<FileLink> fileLinks = this.repository.findByExpirationDateBefore(LocalDate.now());
         this.service.deleteFileFromJob(fileLinks);
         this.repository.deleteAll(fileLinks);
         log.info("File expiration is over");
