@@ -1,24 +1,28 @@
 # Installation
 ## Environnement
-Le projet se lance à l'aide d'un fichier `docker-compose` qui est programmé pour un environnement de dev.  
-Celui-ci comporte un container pour le back-end, la bdd, le vault, le front-end, le reverse-proxy, la bdd de test et un script pour remplir la clé JWT dans le Vault si elle est vide.
+Le projet se lance à l'aide d'un fichier `docker-compose`.  
+Il comporte le back-end, le front-end, la bdd, la bdd e2e, le vault, le reverse-proxy (traefik) et le script d'initialisation du vault.
 ## Configuration git
 Une fois ce repository git clonée, il faut aussi télécharger celui du front-end.
 Pour que celui-ci soit reconnu il faut l'indiquer dans la variable `FRONT_END_CONTEXT` du fichier `.env`
 
 # Lancement
-Le projet (back-end + front-end) se lance avec docker compose up
+Le projet (back-end + front-end) se lance avec `docker compose up`
 ## Changement de la clé JWT
-Il est possible de modifier la clé JWT dans le chemin `secret/kv/datashare-backend` sous le nom de variable `JWT_SECRET`.
+La clé JWT se trouve dans `secret/kv/datashare-backend` avec le nom `JWT_SECRET` dans le vault.
 ## Debug back-end
-Le port 5005 est ouvert dans le back et configuré pour le debug JVM.  
-Cela permet le hotswap et l'activation des points d'arrêts.
+Port 5005 est ouvert dans le back-end pour debug JVM.  
+Il permet le hotswap et l'activation des points d'arrêts.
 ## Rebuild du back-end
-Si un changement fait sauter le hotswap, il faut lancer la commande `mvn package` avant de relancer le container.
+Pour mettre à jour le jar, lancer `mvn package` puis relancer le container.
 
 # Utilisation
-Les ports 4200, 8200 et 8081 du reverse proxy sont exposés à l'adresse localhost.
-Ils permettent respectivement d'accéder au front, au vault et au back-end.
  - Front-end: http://localhost:4200
  - Vault: http://localhost:8200
- - Back-end: http://localhost:8081 (La documentation de l'api se trouve à l'adresse http://localhost:8081/swagger-ui)
+ - Back-end: http://localhost:8081 (Documentation API: http://localhost:8081/swagger-ui)
+
+## Commandes utiles
+- `docker compose up` : Lance l'environnement
+- `docker compose down` : Ferme l'environnement
+- `docker inspect --format "{{json .State.Health }}" ${my_container}` : Health check du ${my_container}
+- `docker container restart ${my_container}` : Relance ${my_container}

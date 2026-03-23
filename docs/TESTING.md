@@ -2,7 +2,7 @@
 ### Tester le back-end
 #### Procédure de test
 Les tests unitaires sont faits avec JUnit et Mockito et se lancent avec `mvn test` ou à chaque `mvn package`.  
-Ils produisent un rapport de test se trouvant dans `/target/coverage`
+Ils produisent un rapport de test se trouvant dans `/target/coverage`  
 Les tests d'intégrations sont faits avec Testcontainers et se lancent avec `mvn verify`
 
 ### Tester le front-end
