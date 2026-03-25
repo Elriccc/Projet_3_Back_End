@@ -168,7 +168,7 @@ services:
     networks:
       - internal_network
     tmpfs:
-      - /var/lib/postgresql/data
+      - /var/lib/postgresql/e2edata
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
       interval: 10s
