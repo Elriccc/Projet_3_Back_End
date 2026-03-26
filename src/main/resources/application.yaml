@@ -1,15 +1,6 @@
 spring:
   application:
     name: datashare-backend
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
   servlet:
     multipart:
       enabled: true
@@ -51,3 +42,37 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
     default-model-expand-depth: -1
+
+---
+
+# Profil persistant (default)
+spring:
+  config:
+    activate:
+      on-profile: default
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+---
+
+# Profil E2E
+spring:
+  config:
+    activate:
+      on-profile: e2e
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
