@@ -7,7 +7,7 @@ Une fois ce repository git clonée, il faut aussi télécharger celui du front-e
 Pour que celui-ci soit reconnu il faut l'indiquer dans la variable `FRONT_END_CONTEXT` du fichier `.env`
 
 # Lancement
-Le projet (back-end + front-end) se lance avec `docker compose up`
+Le projet (back-end + front-end) se lance avec `docker compose --env-file .env up -d`
 ## Changement de la clé JWT
 La clé JWT se trouve dans `secret/kv/datashare-backend` avec le nom `JWT_SECRET` dans le vault.
 ## Debug back-end
@@ -22,7 +22,7 @@ Pour mettre à jour le jar, lancer `mvn package` puis relancer le container.
  - Back-end: http://localhost:8081 (Documentation API: http://localhost:8081/swagger-ui)
 
 ## Commandes utiles
-- `docker compose up` : Lance l'environnement
+- `docker compose --env-file .env up -d` : Lance l'environnement
 - `docker compose down` : Ferme l'environnement
 - `docker inspect --format "{{json .State.Health }}" ${my_container}` : Health check du ${my_container}
 - `docker container restart ${my_container}` : Relance ${my_container}
