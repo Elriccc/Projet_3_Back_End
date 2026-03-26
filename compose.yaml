@@ -71,7 +71,9 @@ services:
       - internal_network
     volumes:
       - ./target:/app:delegated
-      - ./uploads:${DATA_PATH}
+      - ./uploads:/app/data
+    tmpfs:
+      - /app/e2edata
     environment:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
